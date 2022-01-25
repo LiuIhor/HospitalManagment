@@ -9,4 +9,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     @Query("from Hospital where name = :name")
     Hospital findByName(@Param("name") String name);
+
+    boolean existsByName(String name);
 }

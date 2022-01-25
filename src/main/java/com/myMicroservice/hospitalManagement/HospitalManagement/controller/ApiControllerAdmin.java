@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Validated
 public class ApiControllerAdmin {
 
     private final HospitalService hospitalService;
@@ -103,7 +102,7 @@ public class ApiControllerAdmin {
 
     @PatchMapping("/hospitals")
     public ResponseEntity<Hospital> changeHospital(@RequestBody Hospital hospital) {
-        hospitalService.addHospital(hospital);
+        hospitalService.editHospital(hospital);
         return new ResponseEntity<>(hospital, HttpStatus.OK);
     }
 }

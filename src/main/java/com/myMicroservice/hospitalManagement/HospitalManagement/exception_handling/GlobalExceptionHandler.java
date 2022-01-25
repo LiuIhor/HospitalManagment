@@ -40,10 +40,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<IncorrectData> handleException(
-            HttpMessageNotWritableException exception) {
+    public ResponseEntity<IncorrectData> handleException(IdNullException exception) {
         IncorrectData data = new IncorrectData();
-        data.setInformation("Not Such date with this id");
+//        exception.printStackTrace();
+        data.setInformation(exception.getMessage());
+        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<IncorrectData> handleException(
+            NumberFormatException exception) {
+        IncorrectData data = new IncorrectData();
+        data.setInformation("Bad request!");
         return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
     }
 
@@ -51,7 +59,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<IncorrectData> handleException(
             Exception exception) {
         IncorrectData data = new IncorrectData();
-        exception.printStackTrace();
+//        exception.printStackTrace();
         data.setInformation(exception.getMessage());
         return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
     }

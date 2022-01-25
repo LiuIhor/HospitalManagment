@@ -2,19 +2,19 @@ package com.myMicroservice.hospitalManagement.HospitalManagement.controller;
 
 import com.myMicroservice.hospitalManagement.HospitalManagement.service.HospitalService;
 import com.myMicroservice.hospitalManagement.HospitalManagement.service.RoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ApiControllerPatient {
 
-    @Autowired
-    private HospitalService hospitalService;
+    private final HospitalService hospitalService;
 
-    @Autowired
-    private RoomService roomService;
+    private final RoomService roomService;
 
     //TO-DO
     @GetMapping("/hospitals/{hospital_id}/map")

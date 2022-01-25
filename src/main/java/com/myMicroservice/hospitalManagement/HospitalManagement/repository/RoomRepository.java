@@ -20,4 +20,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Query("from Room room where room.hospital.hospital_id = :hospital_id and room.status = true")
     List<Room> findFreeRooms(Long hospital_id);
+
+
 }

@@ -1,8 +1,10 @@
 package com.myMicroservice.hospitalManagement.HospitalManagement.controller;
 
 import com.myMicroservice.hospitalManagement.HospitalManagement.entity.Room;
+import com.myMicroservice.hospitalManagement.HospitalManagement.exception_handling.NoSuchDataException;
 import com.myMicroservice.hospitalManagement.HospitalManagement.service.HospitalService;
 import com.myMicroservice.hospitalManagement.HospitalManagement.service.RoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +14,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ApiControllerDoctor {
 
-    @Autowired
-    private HospitalService hospitalService;
+    private final HospitalService hospitalService;
 
-    @Autowired
-    private RoomService roomService;
+    private final RoomService roomService;
 
     @GetMapping("/hospitals/{hospital_id}/free-rooms")
     public ResponseEntity<List<Room>> showFreeRooms(@PathVariable("hospital_id") Long hospital_id) {
@@ -27,9 +28,9 @@ public class ApiControllerDoctor {
     }
 
     //TO-DO
-    @PostMapping("/hospitals/{hospital_id}/rooms/book")
-    public ResponseEntity<Void> bookRoom(@PathVariable("hospital_id") Long hospital_id) {
-
-        return null;
+    @PostMapping("/hospitals/rooms/{room_id}/book")
+    public ResponseEntity<Room> bookRoom(@PathVariable("room_id") Long room_id) {
+        Room bookedRoom = roomService.bookRoom(room_id);
+        return new ResponseEntity<>(bookedRoom, HttpStatus.OK);
     }
 }
