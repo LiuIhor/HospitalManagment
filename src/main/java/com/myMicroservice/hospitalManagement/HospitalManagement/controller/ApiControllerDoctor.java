@@ -22,15 +22,16 @@ public class ApiControllerDoctor {
     private final RoomService roomService;
 
     @GetMapping("/hospitals/{hospital_id}/free-rooms")
-    public ResponseEntity<List<Room>> showFreeRooms(@PathVariable("hospital_id") Long hospital_id) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<Room> showFreeRooms(@PathVariable("hospital_id") Long hospital_id) {
         List<Room> freeRooms = roomService.showFreeRooms(hospital_id);
-        return new ResponseEntity<>(freeRooms, HttpStatus.OK);
+        return freeRooms;
     }
 
-    //TO-DO
     @PostMapping("/hospitals/rooms/{room_id}/book")
-    public ResponseEntity<Room> bookRoom(@PathVariable("room_id") Long room_id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Room bookRoom(@PathVariable("room_id") Long room_id) {
         Room bookedRoom = roomService.bookRoom(room_id);
-        return new ResponseEntity<>(bookedRoom, HttpStatus.OK);
+        return bookedRoom;
     }
 }

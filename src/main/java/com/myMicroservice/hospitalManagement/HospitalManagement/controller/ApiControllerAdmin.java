@@ -24,29 +24,24 @@ public class ApiControllerAdmin {
     private final RoomService roomService;
 
     @GetMapping ("/hospitals")
-    public ResponseEntity<List<Hospital>> showAllHospitals() {
+    @ResponseStatus(HttpStatus.OK)
+    public List<Hospital> showAllHospitals() {
         List<Hospital> hospitals = hospitalService.getAllHospitals();
-        return new ResponseEntity<>(hospitals, HttpStatus.OK);
+        return hospitals;
     }
 
     @DeleteMapping("/hospitals/{hospital_id}")
-    public ResponseEntity<String> deleteHospitalById(@PathVariable("hospital_id") Long hospital_id) {
-//        System.out.println("enter");
-//        Hospital hospital = hospitalService.getHospitalById(hospital_id);
-//        System.out.print("hospital   " + hospital);
-//        if (hospital == null) {
-//            System.out.println("EXCEPTION");
-////            throw new NoSuchDataException("There is no Hospital with id = " + hospital_id + " in DB");
-//        }
-
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteHospitalById(@PathVariable("hospital_id") Long hospital_id) {
         hospitalService.deleteHospital(hospital_id);
-        return new ResponseEntity<>("Hospital with id = " + hospital_id + " deleted", HttpStatus.OK);
+        return  "Hospital with id = " + hospital_id + " deleted";
     }
 
     @GetMapping("/hospitals/{hospital_id}")
-    public ResponseEntity<Hospital> showHospitalById(@PathVariable("hospital_id") Long hospital_id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Hospital showHospitalById(@PathVariable("hospital_id") Long hospital_id) {
         Hospital hospital = hospitalService.getHospitalById(hospital_id);
-        return new ResponseEntity<>(hospital, HttpStatus.OK);
+        return hospital;
     }
 
 //    @GetMapping("/hospitals/{name}")
@@ -56,53 +51,51 @@ public class ApiControllerAdmin {
 //    }
 
     @GetMapping("/hospitals/{hospital_id}/rooms")
-    public ResponseEntity<List<Room>> showAllRoomsByHospitalId(@PathVariable("hospital_id") Long hospital_id) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<Room> showAllRoomsByHospitalId(@PathVariable("hospital_id") Long hospital_id) {
         List<Room> rooms = roomService.getAllRoomsByHospitalId(hospital_id);
-        return new ResponseEntity<>(rooms, HttpStatus.OK);
+        return rooms;
     }
 
-//    I have a question!!!
-//    @DeleteMapping("/hospitals/{hospital_id}/rooms/{room_id}")
     @DeleteMapping("/hospitals/rooms/{room_id}")
-    public ResponseEntity<String> deleteRoomFromHospitalById(@PathVariable("room_id") Long room_id) {
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteRoomFromHospitalById(@PathVariable("room_id") Long room_id) {
         roomService.deleteRoom(room_id);
-        return new ResponseEntity<>("Room with id = " + room_id + " deleted", HttpStatus.OK);
+        return "Room with id = " + room_id + " deleted";
     }
 
-//    I have a question!!!
-//    @GetMapping(value = "/hospitals/{name_hospital}/rooms/{room_id}")
     @GetMapping("/hospitals/rooms/{room_id}")
-    public ResponseEntity<Room> showRoomById(@PathVariable("room_id") Long room_id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Room showRoomById(@PathVariable("room_id") Long room_id) {
         Room room = roomService.getRoomById(room_id);
-        return new ResponseEntity<>(room, HttpStatus.OK);
+        return room;
     }
 
-//    I have a question!!!
-//    @PostMapping(value = "/hospitals/{hospital_id}/rooms")
     @PostMapping(value = "/hospitals/rooms")
-    public ResponseEntity<Room> addRoom(@RequestBody Room room) {
+    @ResponseStatus(HttpStatus.OK)
+    public Room addRoom(@RequestBody Room room) {
         roomService.addRoom(room);
-        return new ResponseEntity<>(room, HttpStatus.OK);
+        return room;
     }
 
-//    I have a question!!!
-//    @PatchMapping("/hospitals/{gospital_id}/rooms")
     @PatchMapping("/hospitals/rooms")
-    public ResponseEntity<Room> changeRoom(@RequestBody Room room) {
+    @ResponseStatus(HttpStatus.OK)
+    public Room changeRoom(@RequestBody Room room) {
         roomService.addRoom(room);
-        return new ResponseEntity<>(room, HttpStatus.OK);
+        return room;
     }
 
     @PostMapping("/hospitals")
-    public ResponseEntity<Hospital> addHospital(@Valid @RequestBody Hospital hospital) {
-//        Hospital testHospital = new Hospital("", "", "", " ", "");
+    @ResponseStatus(HttpStatus.OK)
+    public Hospital addHospital(@Valid @RequestBody Hospital hospital) {
         hospitalService.addHospital(hospital);
-        return new ResponseEntity<>(hospital, HttpStatus.OK);
+        return hospital;
     }
 
     @PatchMapping("/hospitals")
-    public ResponseEntity<Hospital> changeHospital(@RequestBody Hospital hospital) {
+    @ResponseStatus(HttpStatus.OK)
+    public Hospital changeHospital(@RequestBody Hospital hospital) {
         hospitalService.editHospital(hospital);
-        return new ResponseEntity<>(hospital, HttpStatus.OK);
+        return hospital;
     }
 }

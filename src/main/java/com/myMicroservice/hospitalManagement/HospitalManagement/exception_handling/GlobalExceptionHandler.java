@@ -16,52 +16,51 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(NoSuchDataException.class)
-    public ResponseEntity<IncorrectData> handleException(
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public IncorrectData handleException(
             NoSuchDataException exception) {
         IncorrectData data = new IncorrectData();
         data.setInformation(exception.getMessage());
-        return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
+        return data;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-//        IncorrectData data = new IncorrectData();
-//        data.setInformation();
-//        return new ResponseEntity<IncorrectData>(data, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return errors;
     }
 
     @ExceptionHandler
-    public ResponseEntity<IncorrectData> handleException(IdNullException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public IncorrectData handleException(IdNullException exception) {
         IncorrectData data = new IncorrectData();
-//        exception.printStackTrace();
         data.setInformation(exception.getMessage());
-        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        return data;
     }
 
     @ExceptionHandler
-    public ResponseEntity<IncorrectData> handleException(
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public IncorrectData handleException(
             NumberFormatException exception) {
         IncorrectData data = new IncorrectData();
         data.setInformation("Bad request!");
-        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        return data;
     }
 
     @ExceptionHandler
-    public ResponseEntity<IncorrectData> handleException(
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public IncorrectData handleException(
             Exception exception) {
         IncorrectData data = new IncorrectData();
-//        exception.printStackTrace();
         data.setInformation(exception.getMessage());
-        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        return data;
     }
-
 }
