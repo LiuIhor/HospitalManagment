@@ -5,7 +5,9 @@ import com.myMicroservice.hospitalManagement.HospitalManagement.exception_handli
 import com.myMicroservice.hospitalManagement.HospitalManagement.exception_handling.NoSuchDataException;
 import com.myMicroservice.hospitalManagement.HospitalManagement.repository.RoomRepository;
 import com.myMicroservice.hospitalManagement.HospitalManagement.service.RoomService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +20,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room addRoom(Room room) {
-        Room savedRoom = roomRepository.saveAndFlush(room);
-        return savedRoom;
+        return roomRepository.saveAndFlush(room);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> getAllRoomsByHospitalId(Long hospital_id) {
-        List<Room> rooms = roomRepository.findByHospitalId(hospital_id);
+        List<Room> rooms = roomRepository.findByHospital_Hospital_id(hospital_id);
         if (rooms.isEmpty()) {
             throw new NoSuchDataException("Rooms of hospital with id " + hospital_id + " not founded!");
         }
@@ -81,8 +82,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> showFreeRooms(Long hospital_id) {
-        List<Room> rooms = roomRepository.findFreeRooms(hospital_id);
-        if(rooms.isEmpty()) {
+        List<Room> rooms = roomRepository.findByBookingStatusFalse(hospital_id);
+        if (rooms.isEmpty()) {
             throw new NoSuchDataException("Free rooms in hospital with id " + hospital_id + " not founded!");
         }
         return rooms;
@@ -107,7 +108,7 @@ public class RoomServiceImpl implements RoomService {
         if (roomRepository.existsById(room_id)) {
             System.out.println("Room with id " + room_id + " founded!");
             bookRoom = roomRepository.getById(room_id);
-            bookRoom.setStatus(true);
+            bookRoom.setBookingStatus(true);
             roomRepository.saveAndFlush(bookRoom);
         } else {
             System.out.println("You can`t book this room. Because room with id " + room_id + " not founded!");

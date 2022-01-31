@@ -5,8 +5,9 @@ import com.myMicroservice.hospitalManagement.HospitalManagement.exception_handli
 import com.myMicroservice.hospitalManagement.HospitalManagement.exception_handling.NoSuchDataException;
 import com.myMicroservice.hospitalManagement.HospitalManagement.repository.HospitalRepository;
 import com.myMicroservice.hospitalManagement.HospitalManagement.service.HospitalService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +20,7 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public Hospital addHospital(Hospital hospital) {
-        Hospital savedHospital = hospitalRepository.saveAndFlush(hospital);
-        return savedHospital;
+        return hospitalRepository.saveAndFlush(hospital);
     }
 
     @Override
@@ -37,19 +37,6 @@ public class HospitalServiceImpl implements HospitalService {
     }
 
     @Override
-    public Hospital getHospitalByName(String name) {
-        Hospital hospital;
-        if (hospitalRepository.existsByName(name)) {
-            System.out.println("Hospital with name " + name + " founded!");
-            hospital = hospitalRepository.findByName(name);
-        } else {
-            System.out.println("Hospital with name " + name + " not founded!");
-            throw new NoSuchDataException("Hospital with name " + name + " not founded!");
-        }
-        return hospital;
-    }
-
-    @Override
     public Hospital getHospitalById(Long id) {
         Hospital hospital;
         if (hospitalRepository.existsById(id)) {
@@ -58,6 +45,7 @@ public class HospitalServiceImpl implements HospitalService {
         } else {
             System.out.println("Hospital with id " + id + " not founded!");
             throw new NoSuchDataException("Hospital with id " + id + " not founded!");
+//            return null;
         }
         return hospital;
     }

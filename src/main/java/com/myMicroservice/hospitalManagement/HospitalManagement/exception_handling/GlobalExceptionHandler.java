@@ -1,19 +1,18 @@
 package com.myMicroservice.hospitalManagement.HospitalManagement.exception_handling;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotWritableException;
+
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@RestController
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -22,6 +21,7 @@ public class GlobalExceptionHandler {
     public IncorrectData handleException(
             NoSuchDataException exception) {
         IncorrectData data = new IncorrectData();
+        System.out.println("I catch exception");
         data.setInformation(exception.getMessage());
         return data;
     }
@@ -46,21 +46,23 @@ public class GlobalExceptionHandler {
         return data;
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(NumberFormatException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public IncorrectData handleException(
-            NumberFormatException exception) {
+            java.lang.NumberFormatException exception) {
         IncorrectData data = new IncorrectData();
-        data.setInformation("Bad request!");
+        data.setInformation("Check your request. Because I have exception with NUMBER FORMAT");
         return data;
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public IncorrectData handleException(
-            Exception exception) {
-        IncorrectData data = new IncorrectData();
-        data.setInformation(exception.getMessage());
-        return data;
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public IncorrectData handleException(
+//            Exception exception) {
+//        IncorrectData data = new IncorrectData();
+//        data.setInformation(exception.getMessage());
+//
+//        System.out.println("I catch exception NumberFormatException II");
+//        return data;
+//    }
 }

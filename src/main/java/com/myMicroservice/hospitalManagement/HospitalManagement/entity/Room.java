@@ -1,20 +1,24 @@
 package com.myMicroservice.hospitalManagement.HospitalManagement.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "Rooms")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Room {
+
+    @ApiModelProperty(notes = "Unique identifier of the Room.",
+            example = "1", required = true, position = 0)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long room_id;
@@ -24,59 +28,25 @@ public class Room {
     @NotBlank(message = "Hospital where the room is located is mandatory")
     private Hospital hospital;
 
+    @ApiModelProperty(notes = "Number room. Cannot empty",
+            example = "102", required = true, position = 0)
     @Column(name = "number_room")
     @NotBlank(message = "Room number is mandatory")
     private long number_room;
 
-    @Column(name = "status")
-    private boolean status = false;
+    @ApiModelProperty(notes = "floor of room. Cannot empty",
+            example = "1", required = true, position = 0)
+    @Column(name = "floor")
+    @NotBlank(message = "Floor number is mandatory")
+    private long number_floor;
 
-//    @Column(name = "booked_from")
-//    @Temporal(TemporalType.DATE)
-//    private java.util.Date booked_from;
-//    public Room() {
-//    }
-//
-//    public Room(long number_room, boolean status) {
-//        this.number_room = number_room;
-//        this.status = status;
-//    }
-//
-//    public Room(Hospital hospital, long number_room, boolean status) {
-//        this.hospital = hospital;
-//        this.number_room = number_room;
-//        this.status = status;
-//    }
-//
-//    public Long getRoom_id() {
-//        return room_id;
-//    }
-//
-//    public void setRoom_id(Long room_id) {
-//        this.room_id = room_id;
-//    }
-//
-//    public Hospital getHospital() {
-//        return hospital;
-//    }
-//
-//    public void setHospital(Hospital hospital) {
-//        this.hospital = hospital;
-//    }
-//
-//    public long getNumber_room() {
-//        return number_room;
-//    }
-//
-//    public void setNumber_room(long number_room) {
-//        this.number_room = number_room;
-//    }
-//
-//    public boolean isStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(boolean status) {
-//        this.status = status;
-//    }
+    @ApiModelProperty(notes = "Room description. Cannot empty",
+            example = "This is the reception room", required = true, position = 0)
+    @Column(name = "description")
+    private String description;
+
+    @ApiModelProperty(notes = "Room status.",
+            example = "true", required = true, position = 0)
+    @Column(name = "booking_status")
+    private boolean bookingStatus = false;
 }
