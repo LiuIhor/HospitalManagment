@@ -25,14 +25,8 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public boolean deleteHospital(Long id) {
-        if (hospitalRepository.existsById(id)) {
-            System.out.println("Hospital with id " + id + " founded!");
-            hospitalRepository.deleteById(id);
-        } else {
-            System.out.println("You can`t delete this hospital. Because hospital with id " + id + " not founded!");
-            throw new NoSuchDataException("You can`t delete this hospital. Because hospital with id " + id + " not founded!");
-        }
-        System.out.println("Hospital Deleted");
+        System.out.println("Hospital with id " + id + " founded!");
+        hospitalRepository.deleteById(id);
         return true;
     }
 

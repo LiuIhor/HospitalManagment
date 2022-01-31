@@ -91,14 +91,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public boolean deleteRoomFromHospitalById(Long room_id) {
-        if (roomRepository.existsById(room_id)) {
-            System.out.println("Room with id " + room_id + " founded!");
-            roomRepository.deleteById(room_id);
-        } else {
-            System.out.println("You can`t delete this room. Because room with id " + room_id + " not founded!");
-            throw new NoSuchDataException("You can`t delete this room. Because room with id " + room_id + " not founded!");
-        }
-        System.out.println("Room Deleted");
+        System.out.println("Room with id " + room_id + " founded!");
+        roomRepository.deleteById(room_id);
         return true;
     }
 
@@ -114,7 +108,7 @@ public class RoomServiceImpl implements RoomService {
             System.out.println("You can`t book this room. Because room with id " + room_id + " not founded!");
             throw new NoSuchDataException("You can`t book this room. Because room with id " + room_id + " not founded!");
         }
-        System.out.println("Room Deleted");
+        System.out.println("Room booked");
         return bookRoom;
     }
 }
