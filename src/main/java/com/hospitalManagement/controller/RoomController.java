@@ -70,10 +70,11 @@ public class RoomController {
     @Operation(summary = "Add new room",
             tags = {"Room"})
     @ResponseStatus(HttpStatus.OK)
-    public Room addRoom(@Parameter(description = "Object room to be written to the DB",
+    public RoomDTO addRoom(@Parameter(description = "Object room to be written to the DB",
             required = true, schema = @Schema(implementation = Room.class))
                         @Valid @RequestBody RoomDTO roomDTO) {
-        return roomService.addRoom(ConvertRoomUtils.convertToEntity(roomDTO));
+        Room room = roomService.addRoom(ConvertRoomUtils.convertToEntity(roomDTO));
+        return ConvertRoomUtils.convertToDTO(room);
     }
 
     @PutMapping(value = "/rooms/{roomId}",
@@ -81,21 +82,23 @@ public class RoomController {
     @Operation(summary = "Changes room",
             tags = {"Room"})
     @ResponseStatus(HttpStatus.OK)
-    public Room changeRoom(@Parameter(description = "he parameter is needed to change room by id")
+    public RoomDTO changeRoom(@Parameter(description = "he parameter is needed to change room by id")
                            @PathVariable long roomId,
                            @Parameter(description = "Changed object room to be written to the DB",
                                    required = true, schema = @Schema(implementation = Room.class))
                            @Valid @RequestBody RoomDTO roomDTO) {
         roomDTO.setRoomId(roomId);
-        return roomService.editRoom(ConvertRoomUtils.convertToEntity(roomDTO));
+        Room room = roomService.editRoom(ConvertRoomUtils.convertToEntity(roomDTO));
+        return ConvertRoomUtils.convertToDTO(room);
     }
 
     @PostMapping(value = "/rooms/{roomId}/book",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Books room by id", tags = {"Room"})
     @ResponseStatus(HttpStatus.OK)
-    public Room bookRoom(@Parameter(description = "The parameter is needed to book room in hospital by id")
+    public RoomDTO bookRoom(@Parameter(description = "The parameter is needed to book room in hospital by id")
                          @PathVariable Long roomId) {
-        return roomService.bookRoom(roomId);
+        Room room = roomService.bookRoom(roomId);
+        return ConvertRoomUtils.convertToDTO(room);
     }
 }

@@ -71,10 +71,11 @@ public class HospitalController {
     @Operation(description = "Add new hospital",
             tags = {"Hospital"})
     @ResponseStatus(HttpStatus.OK)
-    public Hospital addHospital(@Parameter(name = "Object hospital to be written to the DB",
+    public HospitalDTO addHospital(@Parameter(name = "Object hospital to be written to the DB",
             required = true, schema = @Schema(implementation = HospitalDTO.class))
                                 @Valid @RequestBody HospitalDTO hospitalDTO) {
-        return hospitalService.addHospital(ConvertHospitalUtil.convertToEntity(hospitalDTO));
+        Hospital hospital = hospitalService.addHospital(ConvertHospitalUtil.convertToEntity(hospitalDTO));
+        return ConvertHospitalUtil.convertToDTO(hospital);
     }
 
     @PutMapping(value = "/{hospitalId}",
@@ -82,13 +83,14 @@ public class HospitalController {
     @Operation(description = "Changes hospital",
             tags = {"Hospital"})
     @ResponseStatus(HttpStatus.OK)
-    public Hospital changeHospital(@Parameter(description = "The parameter is needed to change hospital by id")
+    public HospitalDTO changeHospital(@Parameter(description = "The parameter is needed to change hospital by id")
                                    @PathVariable Long hospitalId,
                                    @Parameter(name = "Changed object hospital to be written to the DB",
                                            required = true, schema = @Schema(implementation = HospitalDTO.class))
                                    @Valid @RequestBody HospitalDTO hospitalDTO) {
         hospitalDTO.setHospitalId(hospitalId);
-        return hospitalService.editHospital(ConvertHospitalUtil.convertToEntity(hospitalDTO));
+        Hospital hospital = hospitalService.editHospital(ConvertHospitalUtil.convertToEntity(hospitalDTO));
+        return ConvertHospitalUtil.convertToDTO(hospital);
     }
 
     //Will be implemented in the next stories

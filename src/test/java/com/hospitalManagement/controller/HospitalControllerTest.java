@@ -1,5 +1,6 @@
 package com.hospitalManagement.controller;
 
+import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.service.HospitalService;
 import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
@@ -72,9 +73,9 @@ class HospitalControllerTest {
 
         when(hospitalService.addHospital(hospital)).thenReturn(hospital);
 
-        Hospital actual = hospitalController.addHospital(ConvertHospitalUtil.convertToDTO(hospital));
+        HospitalDTO actual = hospitalController.addHospital(ConvertHospitalUtil.convertToDTO(hospital));
 
-        assertEquals(hospital, actual);
+        assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
 
         verify(hospitalService, times(1)).addHospital(hospital);
     }
@@ -86,9 +87,9 @@ class HospitalControllerTest {
         when(hospitalService.editHospital(hospital)).thenReturn(hospital);
         Long hospitalId = 1L;
 
-        Hospital actual = hospitalController.changeHospital(hospitalId, ConvertHospitalUtil.convertToDTO(hospital));
+        HospitalDTO actual = hospitalController.changeHospital(hospitalId, ConvertHospitalUtil.convertToDTO(hospital));
 
-        assertEquals(hospital, actual);
+        assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
 
         verify(hospitalService, times(1)).editHospital(hospital);
     }

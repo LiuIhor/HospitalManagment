@@ -1,5 +1,6 @@
 package com.hospitalManagement.controller;
 
+import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
@@ -37,9 +38,9 @@ class RoomControllerTest {
 
         when(roomService.bookRoom(room_id)).thenReturn(room);
 
-        Room actual = roomController.bookRoom(room_id);
+        RoomDTO actual = roomController.bookRoom(room_id);
 
-        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtils.convertToDTO(room), actual);
 
         verify(roomService, times(1)).bookRoom(room_id);
     }
@@ -97,9 +98,9 @@ class RoomControllerTest {
 
         when(roomService.addRoom(room)).thenReturn(room);
 
-        Room actual = roomController.addRoom(ConvertRoomUtils.convertToDTO(room));
+        RoomDTO actual = roomController.addRoom(ConvertRoomUtils.convertToDTO(room));
 
-        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtils.convertToDTO(room), actual);
 
         verify(roomService, times(1)).addRoom(room);
     }
@@ -112,9 +113,9 @@ class RoomControllerTest {
 
         when(roomService.editRoom(room)).thenReturn(room);
 
-        Room actual = roomController.changeRoom(roomId, ConvertRoomUtils.convertToDTO(room));
+        RoomDTO actual = roomController.changeRoom(roomId, ConvertRoomUtils.convertToDTO(room));
 
-        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtils.convertToDTO(room), actual);
 
         verify(roomService, times(1)).editRoom(room);
     }
