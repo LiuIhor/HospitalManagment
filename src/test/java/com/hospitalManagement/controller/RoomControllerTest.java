@@ -4,8 +4,8 @@ import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
-import com.hospitalManagement.service.HospitalService;
 import com.hospitalManagement.utils.ConvertRoomUtils;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,9 +23,6 @@ import static org.mockito.Mockito.*;
 class RoomControllerTest {
 
     @Mock
-    private HospitalService hospitalService;
-
-    @Mock
     private RoomService roomService;
 
     @InjectMocks
@@ -36,7 +33,7 @@ class RoomControllerTest {
         Long room_id = 1L;
         Room room = createRoom();
 
-        when(roomService.bookRoom(room_id)).thenReturn(room);
+        when(roomService.bookRoom(room_id)).thenReturn(ConvertRoomUtils.convertToDTO(room));
 
         RoomDTO actual = roomController.bookRoom(room_id);
 
@@ -57,7 +54,10 @@ class RoomControllerTest {
 
         rooms.add(room);
 
-        when(roomService.showAllRoomFilterStatus("true", hospital_id)).thenReturn(rooms);
+        when(roomService.showAllRoomFilterStatus("true", hospital_id))
+                .thenReturn(rooms.stream()
+                        .map(ConvertRoomUtils::convertToDTO)
+                        .collect(Collectors.toList()));
 
         List<Room> actual = roomController.showAllRoomsByHospitalId(hospital_id, "true").stream()
                 .map(ConvertRoomUtils::convertToEntity)
@@ -83,7 +83,7 @@ class RoomControllerTest {
     void showRoomById() {
         Room room = createRoom();
 
-        when(roomService.getRoomById(room.getRoomId())).thenReturn(room);
+        when(roomService.getRoomById(room.getRoomId())).thenReturn(ConvertRoomUtils.convertToDTO(room));
 
         Room actual = ConvertRoomUtils.convertToEntity(roomController.showRoomById(room.getRoomId()));
 
@@ -96,13 +96,14 @@ class RoomControllerTest {
     void addRoom() {
         Room room = createRoom();
 
-        when(roomService.addRoom(room)).thenReturn(room);
+        when(roomService.addRoom(ConvertRoomUtils.convertToDTO(room)))
+                .thenReturn(ConvertRoomUtils.convertToDTO(room));
 
         RoomDTO actual = roomController.addRoom(ConvertRoomUtils.convertToDTO(room));
 
         assertEquals(ConvertRoomUtils.convertToDTO(room), actual);
 
-        verify(roomService, times(1)).addRoom(room);
+        verify(roomService, times(1)).addRoom(ConvertRoomUtils.convertToDTO(room));
     }
 
     @Test
@@ -111,13 +112,14 @@ class RoomControllerTest {
 
         long roomId = 1L;
 
-        when(roomService.editRoom(room)).thenReturn(room);
+        when(roomService.editRoom(ConvertRoomUtils.convertToDTO(room)))
+                .thenReturn(ConvertRoomUtils.convertToDTO(room));
 
         RoomDTO actual = roomController.changeRoom(roomId, ConvertRoomUtils.convertToDTO(room));
 
         assertEquals(ConvertRoomUtils.convertToDTO(room), actual);
 
-        verify(roomService, times(1)).editRoom(room);
+        verify(roomService, times(1)).editRoom(ConvertRoomUtils.convertToDTO(room));
     }
 
     Room createRoom() {

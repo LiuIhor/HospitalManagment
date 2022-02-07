@@ -1,18 +1,19 @@
 package com.hospitalManagement.service;
 
+import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.entity.Room;
 
 import java.util.List;
 
 public interface RoomService {
 
-    Room addRoom(Room room);
+    RoomDTO addRoom(RoomDTO room);
 
     void deleteRoom(Long id);
 
-    Room getRoomById(Long room_id);
+    RoomDTO getRoomById(Long room_id);
 
-    Room editRoom(Room room);
+    RoomDTO editRoom(RoomDTO room);
 
     List<Room> getAllRooms();
 
@@ -20,11 +21,11 @@ public interface RoomService {
 
     List<Room> showFreeRooms(Long hospital_id);
 
-    List<Room> showAllRoomFilterStatus(String book, Long hospitalId);
+    List<RoomDTO> showAllRoomFilterStatus(String book, Long hospitalId);
 
     void deleteRoomFromHospitalById(Long room_id);
 
-    Room bookRoom(Long room_id);
+    RoomDTO bookRoom(Long room_id);
 
     List<Room> showNotFreeRooms(Long hospitalId);
 }

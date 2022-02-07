@@ -1,18 +1,18 @@
 package com.hospitalManagement.service;
 
-import com.hospitalManagement.entity.Hospital;
+import com.hospitalManagement.dto.HospitalDTO;
 
 import java.util.List;
 
 public interface HospitalService {
 
-    Hospital addHospital(Hospital hospital);
+    HospitalDTO addHospital(HospitalDTO hospital);
 
     void deleteHospital(Long id);
 
-    Hospital getHospitalById(Long id);
+    HospitalDTO getHospitalById(Long id);
 
-    Hospital editHospital(Hospital hospital);
+    HospitalDTO editHospital(HospitalDTO hospital);
 
-    List<Hospital> getAllHospitals();
+    List<HospitalDTO> getAllHospitals();
 }

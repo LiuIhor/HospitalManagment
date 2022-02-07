@@ -3,7 +3,6 @@ package com.hospitalManagement.controller;
 import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.service.RoomService;
-import com.hospitalManagement.utils.ConvertRoomUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * RoomController - controller that contains endpoints for Creating, Retrieving, Updating and Deleting of Rooms.
@@ -39,10 +37,7 @@ public class RoomController {
     public List<RoomDTO> showAllRoomsByHospitalId(@Parameter(description = "The parameter is needed to get all rooms by  hospital id")
                                                   @PathVariable Long hospitalId,
                                                   @RequestParam(required = false, defaultValue = "all") String book) {
-        List<Room> rooms = roomService.showAllRoomFilterStatus(book, hospitalId);
-        return rooms.stream()
-                .map(ConvertRoomUtils::convertToDTO)
-                .collect(Collectors.toList());
+        return roomService.showAllRoomFilterStatus(book, hospitalId);
     }
 
     @DeleteMapping(value = "/rooms/{roomId}",
@@ -62,7 +57,7 @@ public class RoomController {
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO showRoomById(@Parameter(description = "The parameter is needed to get room by id")
                                 @PathVariable Long roomId) {
-        return ConvertRoomUtils.convertToDTO(roomService.getRoomById(roomId));
+        return roomService.getRoomById(roomId);
     }
 
     @PostMapping(value = "/rooms",
@@ -72,9 +67,8 @@ public class RoomController {
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO addRoom(@Parameter(description = "Object room to be written to the DB",
             required = true, schema = @Schema(implementation = Room.class))
-                        @Valid @RequestBody RoomDTO roomDTO) {
-        Room room = roomService.addRoom(ConvertRoomUtils.convertToEntity(roomDTO));
-        return ConvertRoomUtils.convertToDTO(room);
+                           @Valid @RequestBody RoomDTO roomDTO) {
+        return roomService.addRoom(roomDTO);
     }
 
     @PutMapping(value = "/rooms/{roomId}",
@@ -83,13 +77,12 @@ public class RoomController {
             tags = {"Room"})
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO changeRoom(@Parameter(description = "he parameter is needed to change room by id")
-                           @PathVariable long roomId,
-                           @Parameter(description = "Changed object room to be written to the DB",
-                                   required = true, schema = @Schema(implementation = Room.class))
-                           @Valid @RequestBody RoomDTO roomDTO) {
+                              @PathVariable long roomId,
+                              @Parameter(description = "Changed object room to be written to the DB",
+                                      required = true, schema = @Schema(implementation = Room.class))
+                              @Valid @RequestBody RoomDTO roomDTO) {
         roomDTO.setRoomId(roomId);
-        Room room = roomService.editRoom(ConvertRoomUtils.convertToEntity(roomDTO));
-        return ConvertRoomUtils.convertToDTO(room);
+        return roomService.editRoom(roomDTO);
     }
 
     @PostMapping(value = "/rooms/{roomId}/book",
@@ -97,8 +90,7 @@ public class RoomController {
     @Operation(summary = "Books room by id", tags = {"Room"})
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO bookRoom(@Parameter(description = "The parameter is needed to book room in hospital by id")
-                         @PathVariable Long roomId) {
-        Room room = roomService.bookRoom(roomId);
-        return ConvertRoomUtils.convertToDTO(room);
+                            @PathVariable Long roomId) {
+        return roomService.bookRoom(roomId);
     }
 }

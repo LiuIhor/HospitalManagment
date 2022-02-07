@@ -1,11 +1,13 @@
 package com.hospitalManagement.service.impl;
 
+import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.RoomService;
 
+import com.hospitalManagement.utils.ConvertRoomUtils;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * RoomService - Service with business logic for Rooms
@@ -30,8 +33,8 @@ public class RoomServiceImpl implements RoomService {
      * @param room - this is the Room object that will be recorded in the database
      */
     @Override
-    public Room addRoom(Room room) {
-        return roomRepository.save(room);
+    public RoomDTO addRoom(RoomDTO room) {
+        return ConvertRoomUtils.convertToDTO(roomRepository.save(ConvertRoomUtils.convertToEntity(room)));
     }
 
     /**
@@ -51,9 +54,10 @@ public class RoomServiceImpl implements RoomService {
      * @throws NotFoundException - occurs when an object is not found in the database
      */
     @Override
-    public Room getRoomById(Long roomId) {
-        return roomRepository.findById(roomId).orElseThrow(() ->
+    public RoomDTO getRoomById(Long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() ->
                 new NotFoundException(String.format("I don`t found room with id %d", roomId)));
+        return ConvertRoomUtils.convertToDTO(room);
     }
 
     /**
@@ -64,12 +68,12 @@ public class RoomServiceImpl implements RoomService {
      * @throws NotFoundException - occurs when an object is not found in the database
      */
     @Override
-    public Room editRoom(Room room) {
+    public RoomDTO editRoom(RoomDTO room) {
         if (!roomRepository.existsById(room.getRoomId())) {
             throw new NotFoundException(String.format("You can`t edit Room. " +
                     "Because room with id %d not founded!", room.getRoomId()));
         }
-        return roomRepository.save(room);
+        return ConvertRoomUtils.convertToDTO(roomRepository.save(ConvertRoomUtils.convertToEntity(room)));
     }
 
     /**
@@ -139,7 +143,7 @@ public class RoomServiceImpl implements RoomService {
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
-    public List<Room> showAllRoomFilterStatus(String book, Long hospitalId) {
+    public List<RoomDTO> showAllRoomFilterStatus(String book, Long hospitalId) {
         List<Room> rooms = new ArrayList<>();
         if (book.equals("false")) {
             rooms = showFreeRooms(hospitalId);
@@ -150,7 +154,7 @@ public class RoomServiceImpl implements RoomService {
         if (book.equals("all")) {
             rooms = getAllRoomsByHospitalId(hospitalId);
         }
-        return rooms;
+        return  rooms.stream().map(ConvertRoomUtils::convertToDTO).collect(Collectors.toList());
     }
 
     /**
@@ -170,7 +174,7 @@ public class RoomServiceImpl implements RoomService {
      * @throws NotFoundException - occurs when object is not found in the database
      */
     @Override
-    public Room bookRoom(Long roomId) {
+    public RoomDTO bookRoom(Long roomId) {
         Room bookRoom;
         if (roomRepository.existsById(roomId)) {
             bookRoom = roomRepository.getById(roomId);
@@ -180,6 +184,6 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException(String.format("You can`t book this room. " +
                     "Because room with id %d not founded!", roomId));
         }
-        return bookRoom;
+        return ConvertRoomUtils.convertToDTO(bookRoom);
     }
 }

@@ -2,7 +2,6 @@ package com.hospitalManagement.controller;
 
 import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.service.HospitalService;
-import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.utils.ConvertHospitalUtil;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,9 @@ class HospitalControllerTest {
         List<Hospital> hospitals = new ArrayList<>();
         hospitals.add(hospital);
 
-        when(hospitalService.getAllHospitals()).thenReturn(hospitals);
+        when(hospitalService.getAllHospitals()).thenReturn(hospitals.stream()
+                .map(ConvertHospitalUtil::convertToDTO)
+                .collect(Collectors.toList()));
 
         List<Hospital> actual = hospitalController.showAllHospitals().stream()
                 .map(ConvertHospitalUtil::convertToEntity).collect(Collectors.toList());
@@ -57,7 +58,8 @@ class HospitalControllerTest {
     void showHospitalById() {
         Hospital hospital = creteHospital();
 
-        when(hospitalService.getHospitalById(hospital.getHospitalId())).thenReturn(hospital);
+        when(hospitalService.getHospitalById(hospital.getHospitalId()))
+                .thenReturn(ConvertHospitalUtil.convertToDTO(hospital));
 
         Hospital actual = ConvertHospitalUtil.convertToEntity(
                 hospitalController.showHospitalById(hospital.getHospitalId()));
@@ -71,27 +73,31 @@ class HospitalControllerTest {
     void addHospital() {
         Hospital hospital = creteHospital();
 
-        when(hospitalService.addHospital(hospital)).thenReturn(hospital);
+        when(hospitalService.addHospital(ConvertHospitalUtil.convertToDTO(hospital)))
+                .thenReturn(ConvertHospitalUtil.convertToDTO(hospital));
 
         HospitalDTO actual = hospitalController.addHospital(ConvertHospitalUtil.convertToDTO(hospital));
 
         assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
 
-        verify(hospitalService, times(1)).addHospital(hospital);
+        verify(hospitalService, times(1)).addHospital(ConvertHospitalUtil.convertToDTO(hospital));
     }
 
     @Test
     void changeHospital() {
         Hospital hospital = creteHospital();
 
-        when(hospitalService.editHospital(hospital)).thenReturn(hospital);
+        when(hospitalService.editHospital(ConvertHospitalUtil.convertToDTO(hospital)))
+                .thenReturn(ConvertHospitalUtil.convertToDTO(hospital));
+
         Long hospitalId = 1L;
 
         HospitalDTO actual = hospitalController.changeHospital(hospitalId, ConvertHospitalUtil.convertToDTO(hospital));
 
         assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
 
-        verify(hospitalService, times(1)).editHospital(hospital);
+        verify(hospitalService, times(1))
+                .editHospital(ConvertHospitalUtil.convertToDTO(hospital));
     }
 
     Hospital creteHospital() {

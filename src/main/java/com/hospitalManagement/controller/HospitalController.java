@@ -1,10 +1,8 @@
 package com.hospitalManagement.controller;
 
 import com.hospitalManagement.dto.HospitalDTO;
-import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.service.HospitalService;
 
-import com.hospitalManagement.utils.ConvertHospitalUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * HospitalController - controller that contains endpoints for Creating, Retrieving, Updating and Deleting of Hospitals.
@@ -40,10 +37,7 @@ public class HospitalController {
             tags = {"Hospital"})
     @ResponseStatus(HttpStatus.OK)
     public List<HospitalDTO> showAllHospitals() {
-        List<Hospital> hospitals = hospitalService.getAllHospitals();
-        return hospitals.stream()
-                .map(ConvertHospitalUtil::convertToDTO)
-                .collect(Collectors.toList());
+        return hospitalService.getAllHospitals();
     }
 
     @DeleteMapping(value = "/{hospitalId}",
@@ -63,7 +57,7 @@ public class HospitalController {
     @ResponseStatus(HttpStatus.OK)
     public HospitalDTO showHospitalById(@Parameter(description = "The parameter is needed to get hospital by id")
                                         @PathVariable Long hospitalId) {
-        return ConvertHospitalUtil.convertToDTO(hospitalService.getHospitalById(hospitalId));
+        return hospitalService.getHospitalById(hospitalId);
     }
 
     @PostMapping(value = "/",
@@ -73,9 +67,8 @@ public class HospitalController {
     @ResponseStatus(HttpStatus.OK)
     public HospitalDTO addHospital(@Parameter(name = "Object hospital to be written to the DB",
             required = true, schema = @Schema(implementation = HospitalDTO.class))
-                                @Valid @RequestBody HospitalDTO hospitalDTO) {
-        Hospital hospital = hospitalService.addHospital(ConvertHospitalUtil.convertToEntity(hospitalDTO));
-        return ConvertHospitalUtil.convertToDTO(hospital);
+                                   @Valid @RequestBody HospitalDTO hospitalDTO) {
+        return hospitalService.addHospital(hospitalDTO);
     }
 
     @PutMapping(value = "/{hospitalId}",
@@ -84,13 +77,12 @@ public class HospitalController {
             tags = {"Hospital"})
     @ResponseStatus(HttpStatus.OK)
     public HospitalDTO changeHospital(@Parameter(description = "The parameter is needed to change hospital by id")
-                                   @PathVariable Long hospitalId,
-                                   @Parameter(name = "Changed object hospital to be written to the DB",
-                                           required = true, schema = @Schema(implementation = HospitalDTO.class))
-                                   @Valid @RequestBody HospitalDTO hospitalDTO) {
+                                      @PathVariable Long hospitalId,
+                                      @Parameter(name = "Changed object hospital to be written to the DB",
+                                              required = true, schema = @Schema(implementation = HospitalDTO.class))
+                                      @Valid @RequestBody HospitalDTO hospitalDTO) {
         hospitalDTO.setHospitalId(hospitalId);
-        Hospital hospital = hospitalService.editHospital(ConvertHospitalUtil.convertToEntity(hospitalDTO));
-        return ConvertHospitalUtil.convertToDTO(hospital);
+        return hospitalService.editHospital(hospitalDTO);
     }
 
     //Will be implemented in the next stories

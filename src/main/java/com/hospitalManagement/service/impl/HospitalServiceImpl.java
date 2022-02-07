@@ -1,17 +1,20 @@
 package com.hospitalManagement.service.impl;
 
+import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.HospitalRepository;
 import com.hospitalManagement.service.HospitalService;
 
+import com.hospitalManagement.utils.ConvertHospitalUtil;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * HospitalService - Service with business logic for Hospitals
@@ -29,8 +32,9 @@ public class HospitalServiceImpl implements HospitalService {
      * @param hospital - this is the Hospital object that will be recorded in the database
      */
     @Override
-    public Hospital addHospital(Hospital hospital) {
-        return hospitalRepository.save(hospital);
+    public HospitalDTO addHospital(HospitalDTO hospital) {
+        return ConvertHospitalUtil.convertToDTO(
+                hospitalRepository.save(ConvertHospitalUtil.convertToEntity(hospital)));
     }
 
     /**
@@ -50,9 +54,10 @@ public class HospitalServiceImpl implements HospitalService {
      * @throws NotFoundException - occurs when an object is not found in the database
      */
     @Override
-    public Hospital getHospitalById(Long id) {
-        return hospitalRepository.findById(id)
+    public HospitalDTO getHospitalById(Long id) {
+        Hospital hospital = hospitalRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("I don`t found Hospital with id %d", id)));
+        return ConvertHospitalUtil.convertToDTO(hospital);
     }
 
     /**
@@ -63,25 +68,27 @@ public class HospitalServiceImpl implements HospitalService {
      * @throws NotFoundException - occurs when an object is not found in the database
      */
     @Override
-    public Hospital editHospital(Hospital hospital) {
+    public HospitalDTO editHospital(HospitalDTO hospital) {
        if (!hospitalRepository.existsById(hospital.getHospitalId())) {
             throw new NotFoundException(String.format("You can`t edit Hospital. " +
                     "Because hospital with id %d not founded!", hospital.getHospitalId()));
         }
-        return hospitalRepository.save(hospital);
+        return ConvertHospitalUtil.convertToDTO(
+                hospitalRepository.save(ConvertHospitalUtil.convertToEntity(hospital)));
     }
 
     /**
      * getAllHospitals - method to get all hospitals
      *
      * @throws NotFoundException - occurs when objects are not found in the database
+     * @return
      */
     @Override
-    public List<Hospital> getAllHospitals() {
+    public List<HospitalDTO> getAllHospitals() {
         List<Hospital> hospitals = hospitalRepository.findAll();
         if (hospitals.isEmpty()) {
             throw new NotFoundException("Table hospitals in BD is empty");
         }
-        return hospitals;
+        return hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList());
     }
 }
