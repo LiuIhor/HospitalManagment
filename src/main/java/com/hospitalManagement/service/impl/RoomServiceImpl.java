@@ -65,9 +65,7 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public Room editRoom(Room room) {
-        if (room.getRoomId() == null) {
-            throw new IdNullException();
-        } else if (!roomRepository.existsById(room.getRoomId())) {
+        if (!roomRepository.existsById(room.getRoomId())) {
             throw new NotFoundException(String.format("You can`t edit Room. " +
                     "Because room with id %d not founded!", room.getRoomId()));
         }

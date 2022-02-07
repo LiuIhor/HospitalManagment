@@ -1,9 +1,9 @@
 package com.hospitalManagement.service.impl;
 
 import com.hospitalManagement.entity.Hospital;
-import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.HospitalRepository;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -46,78 +47,71 @@ class HospitalServiceImplTest {
         verify(hospitalRepository, times(1)).deleteById(id);
     }
 
-//    @Test
-//    void whenGetHospitalIfFoundShouldBeReturnHospital() {
-//        Long id = 1L;
-//        Hospital hospital = creteHospital();
-//
-//        when(hospitalRepository.existsById(id)).thenReturn(true);
-//        when(hospitalRepository.getById(id)).thenReturn(mockHospital);
-//        Hospital hospital = hospitalService.getHospitalById(id);
-//        assertEquals(mockHospital, hospital);
-//    }
-
     @Test
-    void WhenEditHospitalIfIdNullShouldBeReturnException() {
-        Long id = null;
-        Hospital mockHospital = new Hospital();
-        mockHospital.setHospitalId(id);
-        mockHospital.setAddress("str. Pushkinska 54");
-        mockHospital.setDescription("The best hospital");
-        mockHospital.setEmail("hospital@gmail.com");
-        mockHospital.setName("Hospital of region");
-        mockHospital.setPhone("+380956332496");
+    void whenGetHospitalIfFoundShouldBeReturnHospital() {
+        Long id = 1L;
+        Hospital hospital = creteHospital();
 
-        Exception exception = assertThrows(IdNullException.class, () -> {
-            hospitalService.editHospital(mockHospital);
-        });
-        assertNotNull(exception.getMessage());
+        when(hospitalRepository.findById(id)).thenReturn(Optional.ofNullable(hospital));
+
+        Hospital actual = hospitalService.getHospitalById(id);
+
+        assertEquals(hospital, actual);
+
+        verify(hospitalRepository, times(1)).findById(id);
     }
 
     @Test
-    void WhenEditHospitalIfNotFoundReturnException() {
+    void whenGetHospitalIfNotFoundShouldBeReturnException() {
         Long id = 1L;
-        Hospital mockHospital = new Hospital();
-        mockHospital.setHospitalId(id);
-        mockHospital.setAddress("str. Pushkinska 54");
-        mockHospital.setDescription("The best hospital");
-        mockHospital.setEmail("hospital@gmail.com");
-        mockHospital.setName("Hospital of region");
-        mockHospital.setPhone("+380956332496");
 
-        when(hospitalRepository.existsById(id)).thenReturn(false);
         Exception exception = assertThrows(NotFoundException.class, () -> {
-            hospitalService.editHospital(mockHospital);
+            hospitalService.getHospitalById(id);
         });
+
         assertNotNull(exception.getMessage());
+
+        verify(hospitalRepository, times(1)).findById(id);
     }
 
     @Test
-    void WhenEditHospitalIfFoundReturnHospital() {
-        Long id = 1L;
-        Hospital mockHospital = new Hospital();
-        mockHospital.setHospitalId(id);
-        mockHospital.setAddress("str. Pushkinska 54");
-        mockHospital.setDescription("The best hospital");
-        mockHospital.setEmail("hospital@gmail.com");
-        mockHospital.setName("Hospital of region");
-        mockHospital.setPhone("+380956332496");
+    void WhenEditHospitalIfNotFoundShouldBeReturnException() {
+        Hospital hospital = creteHospital();
 
-        when(hospitalRepository.existsById(id)).thenReturn(true);
-        when(hospitalRepository.saveAndFlush(mockHospital)).thenReturn(mockHospital);
-        Hospital actual = hospitalService.editHospital(mockHospital);
-        assertEquals(mockHospital, actual);
-        verify(hospitalRepository).saveAndFlush(mockHospital);
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            hospitalService.editHospital(hospital);
+        });
+
+        assertNotNull(exception.getMessage());
+
+        verify(hospitalRepository, times(0)).save(hospital);
+    }
+
+    @Test
+    void WhenEditHospitalIfFoundReturnException() {
+        Hospital hospital = creteHospital();
+
+        when(hospitalRepository.existsById(hospital.getHospitalId())).thenReturn(true);
+
+        when(hospitalRepository.save(hospital)).thenReturn(hospital);
+
+        Hospital actual = hospitalService.editHospital(hospital);
+
+        assertEquals(hospital, actual);
+
+        verify(hospitalRepository, times(1)).save(hospital);
     }
 
     @Test
     void whenGetAllHospitalsIfListEmptyShouldBeReturnException() {
         List<Hospital> hospitals = new ArrayList<>();
+
         when(hospitalRepository.findAll()).thenReturn(hospitals);
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
             hospitalService.getAllHospitals();
         });
+
         assertNotNull(exception.getMessage());
     }
 

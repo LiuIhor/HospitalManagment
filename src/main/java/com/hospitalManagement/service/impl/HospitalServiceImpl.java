@@ -64,9 +64,7 @@ public class HospitalServiceImpl implements HospitalService {
      */
     @Override
     public Hospital editHospital(Hospital hospital) {
-        if (hospital.getHospitalId().equals(null)) {
-            throw new IdNullException();
-        } else if (!hospitalRepository.existsById(hospital.getHospitalId())) {
+       if (!hospitalRepository.existsById(hospital.getHospitalId())) {
             throw new NotFoundException(String.format("You can`t edit Hospital. " +
                     "Because hospital with id %d not founded!", hospital.getHospitalId()));
         }

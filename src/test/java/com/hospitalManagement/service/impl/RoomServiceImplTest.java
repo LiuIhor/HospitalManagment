@@ -2,9 +2,9 @@ package com.hospitalManagement.service.impl;
 
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
-import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.RoomRepository;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,239 +26,164 @@ class RoomServiceImplTest {
 
     @InjectMocks
     private RoomServiceImpl roomService;
+
     @Test
     void whenSaveHospitalShouldReturnHospital() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
+        Room room = createRoom();
 
-        when(roomRepository.saveAndFlush(room)).thenReturn(room);
+        when(roomRepository.save(room)).thenReturn(room);
+
         assertEquals(room, roomService.addRoom(room));
-        verify(roomRepository).saveAndFlush(room);
-    }
-    @Test
-    void whenDeleteIfFoundShouldBeReturnTrue() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
 
-        when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
-
-//        boolean result = roomService.deleteRoom(room.getRoom_id());
-//        assertTrue(result);
-        verify(roomRepository).deleteById(room.getRoomId());
+        verify(roomRepository, times(1)).save(room);
     }
 
     @Test
-    void whenDeleteIfNotFoundShouldBeReturnException() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
+    void whenDelete() {
+        Long id = 1L;
 
-        when(roomRepository.existsById(room.getRoomId())).thenReturn(false);
-        Exception exception = assertThrows(NotFoundException.class, () -> {
-            roomService.deleteRoom(room.getRoomId());
-        });
-        assertNotNull(exception.getMessage());
-        verify(roomRepository, times(0)).deleteById(room.getRoomId());
+        doNothing().when(roomRepository).deleteById(id);
+
+        roomService.deleteRoom(id);
+
+        verify(roomRepository, times(1)).deleteById(id);
     }
 
-
     @Test
-    void WhenGetRoomByIdIfNotFountShouldBeReturnException() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
-        when(roomRepository.existsById(room.getRoomId())).thenReturn(false);
+    void whenGetRoomByIdIfNotFountShouldBeReturnException() {
+        Room room = createRoom();
+
         Exception exception = assertThrows(NotFoundException.class, () -> {
             roomService.getRoomById(room.getRoomId());
         });
+
         assertNotNull(exception.getMessage());
-        verify(roomRepository, times(0)).getById(room.getRoomId());
+
+        verify(roomRepository, times(1)).findById(room.getRoomId());
     }
 
     @Test
-    void WhenGetRoomByIdIfFountShouldBeReturnRoom() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
+    void whenGetRoomByIdIfFountShouldBeReturnRoom() {
+        Room room = createRoom();
 
-        when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
-        when(roomRepository.getById(room.getRoomId())).thenReturn(room);
+        when(roomRepository.findById(room.getRoomId())).thenReturn(Optional.of(room));
 
         Room actual = roomService.getRoomById(room.getRoomId());
 
         assertEquals(room, actual);
-        verify(roomRepository).getById(room.getRoomId());
+
+        verify(roomRepository, times(1)).findById(room.getRoomId());
     }
 
     @Test
-    void WhenEditRoomIfRoomIdNullShouldBeReturnException() {
-        Room room = new Room();
-        room.setRoomId(null);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
+    void whenEditRoomIfNotFoundReturnException() {
+        Room room = createRoom();
 
-//        Exception exception = assertThrows(IdNullException.class, () -> {
-//            roomService.editRoom(room);
-//        });
-//        assertNotNull(exception.getMessage());
-    }
-
-    @Test
-    void WhenEditRoomIfNotFoundReturnException() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
-
-        when(roomRepository.existsById(room.getRoomId())).thenReturn(false);
         Exception exception = assertThrows(NotFoundException.class, () -> {
             roomService.editRoom(room);
         });
+
         assertNotNull(exception.getMessage());
+
+        verify(roomRepository, times(0)).save(room);
     }
 
     @Test
     void WhenEditRoomIfFoundReturnHospital() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
-//
-//        when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
-//        when(roomRepository.saveAndFlush(room)).thenReturn(room);
-//        Room actual = roomService.editRoom(room);
-//        assertEquals(room, actual);
-//        verify(roomRepository).saveAndFlush(room);
+        Room room = createRoom();
+
+        when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
+
+        when(roomRepository.save(room)).thenReturn(room);
+
+        Room actual = roomService.editRoom(room);
+
+        assertEquals(room, actual);
+
+        verify(roomRepository, times(1)).save(room);
     }
 
     @Test
     void whenGetAllRoomsIfListEmptyShouldBeReturnException() {
         List<Room> rooms = new ArrayList<>();
+
         when(roomRepository.findAll()).thenReturn(rooms);
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
             roomService.getAllRooms();
         });
+
         assertNotNull(exception.getMessage());
     }
 
     @Test
     void whenGetAllRoomsIfListNotEmptyShouldBeReturnHospitals() {
         List<Room> rooms = new ArrayList<>();
-        rooms.add(new Room());
+
+        rooms.add(createRoom());
+
         when(roomRepository.findAll()).thenReturn(rooms);
 
         assertEquals(rooms, roomService.getAllRooms());
-        verify(roomRepository).findAll();
+
+        verify(roomRepository, times(1)).findAll();
     }
 
     @Test
     void whenGetAllRoomsByHospitalIdIfListEmptyShouldBeReturnException() {
         List<Room> rooms = new ArrayList<>();
+
         when(roomRepository.findAllByHospitalHospitalId(1L)).thenReturn(rooms);
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
             roomService.getAllRoomsByHospitalId(1L);
         });
+
         assertNotNull(exception.getMessage());
     }
 
     @Test
     void whenGetAllRoomsByHospitalIdIfListNotEmptyShouldBeReturnHospitals() {
         List<Room> rooms = new ArrayList<>();
-        rooms.add(new Room());
-        Long hospital_id = 1L;
-        when(roomRepository.findAllByHospitalHospitalId(hospital_id)).thenReturn(rooms);
+        rooms.add(createRoom());
+        Long hospitalId = 1L;
 
-        assertEquals(rooms, roomService.getAllRoomsByHospitalId(hospital_id));
-        verify(roomRepository).findAllByHospitalHospitalId(hospital_id);
+        when(roomRepository.findAllByHospitalHospitalId(hospitalId)).thenReturn(rooms);
+
+        assertEquals(rooms, roomService.getAllRoomsByHospitalId(hospitalId));
+
+        verify(roomRepository).findAllByHospitalHospitalId(hospitalId);
     }
 
     @Test
     void whenShowFreeRoomsIfListEmptyShouldBeReturnException() {
         List<Room> rooms = new ArrayList<>();
-        Long hospital_id = 1L;
-        when(roomRepository.findAllByBookingStatusFalseAndHospitalHospitalId(hospital_id)).thenReturn(rooms);
+        Long hospitalId = 1L;
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
-            roomService.showFreeRooms(hospital_id);
+            roomService.showFreeRooms(hospitalId);
         });
+
         assertNotNull(exception.getMessage());
     }
 
     @Test
     void whenShowFreeRoomsIfListNotEmptyShouldBeReturnHospitals() {
         List<Room> rooms = new ArrayList<>();
-        rooms.add(new Room());
-        Long hospital_id = 1L;
+        rooms.add(createRoom());
+        Long hospitalId = 1L;
+
         when(roomRepository.findAllByBookingStatusFalseAndHospitalHospitalId(1L)).thenReturn(rooms);
 
-        assertEquals(rooms, roomService.showFreeRooms(hospital_id));
-        verify(roomRepository).findAllByBookingStatusFalseAndHospitalHospitalId(hospital_id);
+        assertEquals(rooms, roomService.showFreeRooms(hospitalId));
+
+        verify(roomRepository).findAllByBookingStatusFalseAndHospitalHospitalId(hospitalId);
     }
-
-    @Test
-    void whenDeleteRoomFromHospitalIdIfNotFoundShouldBeReturnException() {
-        Long room_id = 1L;
-        when(roomRepository.existsById(room_id)).thenReturn(false);
-
-        Exception exception = assertThrows(NotFoundException.class, () -> {
-            roomService.deleteRoomFromHospitalById(room_id);
-        });
-
-        assertNotNull(exception.getMessage());
-        verify(roomRepository, times(0)).deleteById(room_id);
-    }
-
-    @Test
-    void whenDeleteRoomFromHospitalIdIfFoundShouldBeReturnTrue() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
-        when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
-
-//        when(roomRepository.getById(room.getRoom_id())).thenReturn(room);
-
-//        boolean actual = roomService.deleteRoomFromHospitalById(room.getRoom_id());
-//        assertTrue(actual);
-        verify(roomRepository).deleteById(room.getRoomId());
-    }
-
 
     @Test
     void whenBookRoomIfNotFoundShouldBeReturnException() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
+        Room room = createRoom();
+
         when(roomRepository.existsById(room.getRoomId())).thenReturn(false);
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
@@ -265,42 +191,85 @@ class RoomServiceImplTest {
         });
 
         assertNotNull(exception.getMessage());
-        verify(roomRepository, times(0)).deleteById(room.getRoomId());
 
+        verify(roomRepository, times(0)).deleteById(room.getRoomId());
     }
 
     @Test
     void whenBookRoomIfFoundShouldBeReturnRoom() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
+        Room room = createRoom();
+
         when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
+
         when(roomRepository.getById(room.getRoomId())).thenReturn(room);
-        when(roomRepository.saveAndFlush(room)).thenReturn(room);
+
+        when(roomRepository.save(room)).thenReturn(room);
 
         Room actual = roomService.bookRoom(room.getRoomId());
 
         assertEquals(room, actual);
-        verify(roomRepository).saveAndFlush(room);
 
+        verify(roomRepository).save(room);
     }
 
     @Test
     void whenAddRoomShouldBeReturnRoom() {
-        Room room = new Room();
-        room.setRoomId(1L);
-        room.setNumberRoom(101);
-        room.setHospital(new Hospital());
-        room.setDescription("description");
-        room.setBookingStatus(true);
-        when(roomRepository.saveAndFlush(room)).thenReturn(room);
+        Room room = createRoom();
+        when(roomRepository.save(room)).thenReturn(room);
 
         Room actual = roomService.addRoom(room);
+
         assertEquals(room, actual);
-        verify(roomRepository).saveAndFlush(room);
+
+        verify(roomRepository).save(room);
+    }
+
+    @Test
+    void whenShowAllRoofIfStatusFalseShouldBeReturnRoomFree() {
+        List<Room> rooms = new ArrayList<>();
+        rooms.add(createRoom());
+        Long hospitalId = 1L;
+
+        when(roomRepository.findAllByBookingStatusFalseAndHospitalHospitalId(hospitalId)).thenReturn(rooms);
+
+        List<Room> actual = roomService.showAllRoomFilterStatus("false", hospitalId);
+
+        assertEquals(rooms, actual);
+
+        verify(roomRepository, times(1))
+                .findAllByBookingStatusFalseAndHospitalHospitalId(hospitalId);
+    }
+
+    @Test
+    void whenShowAllRoofIfStatusTrueShouldBeReturnRoomFree() {
+        List<Room> rooms = new ArrayList<>();
+        rooms.add(createRoom());
+        Long hospitalId = 1L;
+
+        when(roomRepository.findAllByBookingStatusTrueAndHospitalHospitalId(hospitalId)).thenReturn(rooms);
+
+        List<Room> actual = roomService.showAllRoomFilterStatus("true", hospitalId);
+
+        assertEquals(rooms, actual);
+
+        verify(roomRepository, times(1))
+                .findAllByBookingStatusTrueAndHospitalHospitalId(hospitalId);
+    }
+
+    @Test
+    void whenShowAllRoofIfStatusAllShouldBeReturnRoomFree() {
+        List<Room> rooms = new ArrayList<>();
+        rooms.add(createRoom());
+        Long hospitalId = 1L;
+
+        when(roomRepository.findAllByHospitalHospitalId(hospitalId)).thenReturn(rooms);
+
+        List<Room> actual = roomService.showAllRoomFilterStatus("all", hospitalId);
+
+        assertEquals(rooms, actual);
+
+        verify(roomRepository, times(1))
+                .findAllByHospitalHospitalId(hospitalId);
     }
 
     Room createRoom() {

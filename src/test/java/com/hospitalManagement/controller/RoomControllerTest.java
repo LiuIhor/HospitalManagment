@@ -4,6 +4,7 @@ import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.service.HospitalService;
+import com.hospitalManagement.utils.ConvertRoomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,12 +13,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RoomControllerTest {
+
     @Mock
     private HospitalService hospitalService;
 
@@ -26,22 +29,6 @@ class RoomControllerTest {
 
     @InjectMocks
     private RoomController roomController;
-
-    @Test
-    void showFreeRooms() {
-        Long hospital_id = 1L;
-        Room room = createRoom();
-        List<Room> rooms = new ArrayList<>();
-        rooms.add(room);
-
-        when(roomService.showFreeRooms(hospital_id)).thenReturn(rooms);
-
-//        List<Room> actual = roomController.showFreeRooms(hospital_id);
-
-//        assertEquals(rooms, actual);
-
-        verify(roomService).showFreeRooms(hospital_id);
-    }
 
     @Test
     void bookRoom() {
@@ -62,17 +49,22 @@ class RoomControllerTest {
     void showAllRoomsByHospitalId() {
         Long hospital_id = 1L;
         List<Room> rooms = new ArrayList<>();
+
         Room room = createRoom();
+
+        room.setBookingStatus(true);
 
         rooms.add(room);
 
-        when(roomService.getAllRoomsByHospitalId(hospital_id)).thenReturn(rooms);
+        when(roomService.showAllRoomFilterStatus("true", hospital_id)).thenReturn(rooms);
 
-//        List<Room> actual = roomController.showAllRoomsByHospitalId(hospital_id);
+        List<Room> actual = roomController.showAllRoomsByHospitalId(hospital_id, "true").stream()
+                .map(ConvertRoomUtils::convertToEntity)
+                .collect(Collectors.toList());
 
-//        assertEquals(rooms, actual);
+        assertEquals(rooms, actual);
 
-        verify(roomService).getAllRoomsByHospitalId(hospital_id);
+        verify(roomService).showAllRoomFilterStatus("true", hospital_id);
     }
 
     @Test
@@ -92,9 +84,9 @@ class RoomControllerTest {
 
         when(roomService.getRoomById(room.getRoomId())).thenReturn(room);
 
-//        Room actual = roomController.showRoomById(room.getRoomId());
+        Room actual = ConvertRoomUtils.convertToEntity(roomController.showRoomById(room.getRoomId()));
 
-//        assertEquals(room, actual);
+        assertEquals(room, actual);
 
         verify(roomService, times(1)).getRoomById(room.getRoomId());
     }
@@ -105,9 +97,10 @@ class RoomControllerTest {
 
         when(roomService.addRoom(room)).thenReturn(room);
 
-//        Room actual = roomController.addRoom(room);
+        Room actual = roomController.addRoom(ConvertRoomUtils.convertToDTO(room));
 
-//        assertEquals(room, actual);
+        assertEquals(room, actual);
+
         verify(roomService, times(1)).addRoom(room);
     }
 
@@ -115,13 +108,15 @@ class RoomControllerTest {
     void changeRoom() {
         Room room = createRoom();
 
-//        when(roomService.editRoom(room)).thenReturn(room);
+        long roomId = 1L;
 
-//        Room actual = roomController.changeRoom(room);
+        when(roomService.editRoom(room)).thenReturn(room);
 
-//        assertEquals(room, actual);
+        Room actual = roomController.changeRoom(roomId, ConvertRoomUtils.convertToDTO(room));
 
-//        verify(roomService, times(1)).editRoom(room);
+        assertEquals(room, actual);
+
+        verify(roomService, times(1)).editRoom(room);
     }
 
     Room createRoom() {

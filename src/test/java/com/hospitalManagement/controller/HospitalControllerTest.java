@@ -3,6 +3,7 @@ package com.hospitalManagement.controller;
 import com.hospitalManagement.service.HospitalService;
 import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
+import com.hospitalManagement.utils.ConvertHospitalUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,11 +32,13 @@ class HospitalControllerTest {
 
         List<Hospital> hospitals = new ArrayList<>();
         hospitals.add(hospital);
-//        when(hospitalService.getAllHospitals()).thenReturn(hospitals);
 
-//        List<Hospital> actual = hospitalController.showAllHospitals();
+        when(hospitalService.getAllHospitals()).thenReturn(hospitals);
 
-//        assertEquals(hospitals, actual);
+        List<Hospital> actual = hospitalController.showAllHospitals().stream()
+                .map(ConvertHospitalUtil::convertToEntity).collect(Collectors.toList());
+
+        assertEquals(hospitals, actual);
 
         verify(hospitalService, times(1)).getAllHospitals();
     }
@@ -54,9 +58,10 @@ class HospitalControllerTest {
 
         when(hospitalService.getHospitalById(hospital.getHospitalId())).thenReturn(hospital);
 
-//        Hospital actual = hospitalController.showHospitalById(hospital.getHospitalId());
+        Hospital actual = ConvertHospitalUtil.convertToEntity(
+                hospitalController.showHospitalById(hospital.getHospitalId()));
 
-//        assertEquals(hospital, actual);
+        assertEquals(hospital, actual);
 
         verify(hospitalService).getHospitalById(hospital.getHospitalId());
     }
@@ -67,9 +72,9 @@ class HospitalControllerTest {
 
         when(hospitalService.addHospital(hospital)).thenReturn(hospital);
 
-//        Hospital actual = hospitalController.addHospital(hospital);
+        Hospital actual = hospitalController.addHospital(ConvertHospitalUtil.convertToDTO(hospital));
 
-//        assertEquals(hospital, actual);
+        assertEquals(hospital, actual);
 
         verify(hospitalService, times(1)).addHospital(hospital);
     }
@@ -77,11 +82,13 @@ class HospitalControllerTest {
     @Test
     void changeHospital() {
         Hospital hospital = creteHospital();
+
         when(hospitalService.editHospital(hospital)).thenReturn(hospital);
+        Long hospitalId = 1L;
 
-//        Hospital actual = hospitalController.changeHospital(hospital);
+        Hospital actual = hospitalController.changeHospital(hospitalId, ConvertHospitalUtil.convertToDTO(hospital));
 
-//        assertEquals(hospital, actual);
+        assertEquals(hospital, actual);
 
         verify(hospitalService, times(1)).editHospital(hospital);
     }
