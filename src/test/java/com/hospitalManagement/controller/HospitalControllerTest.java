@@ -3,7 +3,7 @@ package com.hospitalManagement.controller;
 import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.service.HospitalService;
 import com.hospitalManagement.entity.Hospital;
-import com.hospitalManagement.utils.ConvertHospitalUtil;
+import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

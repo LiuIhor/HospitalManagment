@@ -7,7 +7,7 @@ import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.RoomService;
 
-import com.hospitalManagement.utils.ConvertRoomUtils;
+import com.hospitalManagement.utils.modelMapper.ConvertRoomUtil;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public RoomDTO addRoom(RoomDTO room) {
-        return ConvertRoomUtils.convertToDTO(roomRepository.save(ConvertRoomUtils.convertToEntity(room)));
+        return ConvertRoomUtil.convertToDTO(roomRepository.save(ConvertRoomUtil.convertToEntity(room)));
     }
 
     /**
@@ -57,7 +57,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomDTO getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() ->
                 new NotFoundException(String.format("I don`t found room with id %d", roomId)));
-        return ConvertRoomUtils.convertToDTO(room);
+        return ConvertRoomUtil.convertToDTO(room);
     }
 
     /**
@@ -73,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException(String.format("You can`t edit Room. " +
                     "Because room with id %d not founded!", room.getRoomId()));
         }
-        return ConvertRoomUtils.convertToDTO(roomRepository.save(ConvertRoomUtils.convertToEntity(room)));
+        return ConvertRoomUtil.convertToDTO(roomRepository.save(ConvertRoomUtil.convertToEntity(room)));
     }
 
     /**
@@ -154,7 +154,7 @@ public class RoomServiceImpl implements RoomService {
         if (book.equals("all")) {
             rooms = getAllRoomsByHospitalId(hospitalId);
         }
-        return  rooms.stream().map(ConvertRoomUtils::convertToDTO).collect(Collectors.toList());
+        return  rooms.stream().map(ConvertRoomUtil::convertToDTO).collect(Collectors.toList());
     }
 
     /**
@@ -184,6 +184,6 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException(String.format("You can`t book this room. " +
                     "Because room with id %d not founded!", roomId));
         }
-        return ConvertRoomUtils.convertToDTO(bookRoom);
+        return ConvertRoomUtil.convertToDTO(bookRoom);
     }
 }

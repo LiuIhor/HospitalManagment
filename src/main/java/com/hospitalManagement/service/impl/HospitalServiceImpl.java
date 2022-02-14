@@ -2,17 +2,22 @@ package com.hospitalManagement.service.impl;
 
 import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.entity.Hospital;
+import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
+import com.hospitalManagement.utils.svg.SvgUtil;
 import com.hospitalManagement.repository.HospitalRepository;
+import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.HospitalService;
 
-import com.hospitalManagement.utils.ConvertHospitalUtil;
+import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,7 @@ import java.util.stream.Collectors;
 public class HospitalServiceImpl implements HospitalService {
 
     private final HospitalRepository hospitalRepository;
+    private final RoomRepository roomRepository;
 
     /**
      * addHospital - method to add hospital in the DB
@@ -60,6 +66,13 @@ public class HospitalServiceImpl implements HospitalService {
         return ConvertHospitalUtil.convertToDTO(hospital);
     }
 
+    @Override
+    public Hospital getHospitalEntityById(Long id) {
+        Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("I don`t found Hospital with id %d", id)));
+        return hospital;
+    }
+
     /**
      * editHospital - method to edit hospital
      *
@@ -69,7 +82,7 @@ public class HospitalServiceImpl implements HospitalService {
      */
     @Override
     public HospitalDTO editHospital(HospitalDTO hospital) {
-       if (!hospitalRepository.existsById(hospital.getHospitalId())) {
+        if (!hospitalRepository.existsById(hospital.getHospitalId())) {
             throw new NotFoundException(String.format("You can`t edit Hospital. " +
                     "Because hospital with id %d not founded!", hospital.getHospitalId()));
         }
@@ -80,8 +93,8 @@ public class HospitalServiceImpl implements HospitalService {
     /**
      * getAllHospitals - method to get all hospitals
      *
-     * @throws NotFoundException - occurs when objects are not found in the database
      * @return
+     * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
     public List<HospitalDTO> getAllHospitals() {
@@ -90,5 +103,20 @@ public class HospitalServiceImpl implements HospitalService {
             throw new NotFoundException("Table hospitals in BD is empty");
         }
         return hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public byte[] generateSVG(Long hospitalId) {
+        List<Room> rooms = roomRepository.findAllByHospitalHospitalId(hospitalId);
+        System.out.println(rooms);
+        byte[] map = null;
+        try {
+            System.out.println("Enter in try");
+            map = SvgUtil.svg(rooms);
+
+        } catch (TransformerException | IOException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 }

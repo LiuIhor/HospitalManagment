@@ -1,9 +1,11 @@
 package com.hospitalManagement.service.impl;
 
+import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.HospitalRepository;
 
+import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -12,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,9 +34,9 @@ class HospitalServiceImplTest {
 
         when(hospitalRepository.save(hospital)).thenReturn(hospital);
 
-//        Hospital actual = hospitalService.addHospital(hospital);
+        HospitalDTO actual = hospitalService.addHospital(ConvertHospitalUtil.convertToDTO(hospital));
 
-//        assertEquals(hospital, actual);
+        assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
     }
 
     @Test
@@ -54,9 +57,9 @@ class HospitalServiceImplTest {
 
         when(hospitalRepository.findById(id)).thenReturn(Optional.ofNullable(hospital));
 
-//        Hospital actual = hospitalService.getHospitalById(id);
+        HospitalDTO actual = hospitalService.getHospitalById(id);
 
-//        assertEquals(hospital, actual);
+        assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
 
         verify(hospitalRepository, times(1)).findById(id);
     }
@@ -79,7 +82,7 @@ class HospitalServiceImplTest {
         Hospital hospital = creteHospital();
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
-//            hospitalService.editHospital(hospital);
+            hospitalService.editHospital(ConvertHospitalUtil.convertToDTO(hospital));
         });
 
         assertNotNull(exception.getMessage());
@@ -95,9 +98,9 @@ class HospitalServiceImplTest {
 
         when(hospitalRepository.save(hospital)).thenReturn(hospital);
 
-//        Hospital actual = hospitalService.editHospital(hospital);
+        HospitalDTO actual = hospitalService.editHospital(ConvertHospitalUtil.convertToDTO(hospital));
 
-//        assertEquals(hospital, actual);
+        assertEquals(ConvertHospitalUtil.convertToDTO(hospital), actual);
 
         verify(hospitalRepository, times(1)).save(hospital);
     }
@@ -120,8 +123,8 @@ class HospitalServiceImplTest {
         List<Hospital> hospitals = new ArrayList<>();
         hospitals.add(new Hospital());
         when(hospitalRepository.findAll()).thenReturn(hospitals);
-
-        assertEquals(hospitals, hospitalService.getAllHospitals());
+        assertEquals( hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList()),
+                hospitalService.getAllHospitals());
         verify(hospitalRepository).findAll();
     }
 

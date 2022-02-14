@@ -1,22 +1,21 @@
 package com.hospitalManagement.controller;
 
 import com.hospitalManagement.dto.HospitalDTO;
+import com.hospitalManagement.entity.Hospital;
+import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.HospitalService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 /**
@@ -85,24 +84,28 @@ public class HospitalController {
         return hospitalService.editHospital(hospitalDTO);
     }
 
-    //Will be implemented in the next stories
     @GetMapping(value = "/{hospitalId}/map",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Returns data for map of hospital as graph",
             tags = {"Hospital"})
-    public ResponseEntity<Void> showMapAsGraph(@Parameter(description = "The parameter is needed to get data hospital by id")
+    public Hospital showMapAsGraph(@Parameter(description = "The parameter is needed to get data hospital by id")
                                                @PathVariable Long hospitalId) {
-        return null;
+        return hospitalService.getHospitalEntityById(hospitalId);
     }
 
-    //Will be implemented in the next stories
     @GetMapping(value = "/{hospitalId}/map-svg",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = "image/svg+xml")
     @Operation(summary = "Generate actual map as svg picture",
             tags = {"Hospital"})
-    public ResponseEntity<Void> generateSvgMap(@Parameter(description = "The parameter is needed to generate actual map" +
+    public ResponseEntity<byte[]> showMap(@Parameter(description = "The parameter is needed to generate actual map" +
             " of hospital by id")
-                                               @PathVariable Long hospitalId) {
-        return null;
+                                               @PathVariable Long hospitalId){
+        byte[] b = hospitalService.generateSVG(hospitalId);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_XML);
+        return new ResponseEntity<>(b, headers, HttpStatus.OK);
     }
+
+
 }

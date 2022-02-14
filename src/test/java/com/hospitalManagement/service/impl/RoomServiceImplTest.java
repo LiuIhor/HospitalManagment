@@ -1,10 +1,12 @@
 package com.hospitalManagement.service.impl;
 
+import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.RoomRepository;
 
+import com.hospitalManagement.utils.modelMapper.ConvertRoomUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,7 +36,7 @@ class RoomServiceImplTest {
 
         when(roomRepository.save(room)).thenReturn(room);
 
-//        assertEquals(room, roomService.addRoom(room));
+        assertEquals(ConvertRoomUtil.convertToDTO(room), roomService.addRoom(ConvertRoomUtil.convertToDTO(room)));
 
         verify(roomRepository, times(1)).save(room);
     }
@@ -68,9 +71,9 @@ class RoomServiceImplTest {
 
         when(roomRepository.findById(room.getRoomId())).thenReturn(Optional.of(room));
 
-//        Room actual = roomService.getRoomById(room.getRoomId());
+        RoomDTO actual = roomService.getRoomById(room.getRoomId());
 
-//        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
 
         verify(roomRepository, times(1)).findById(room.getRoomId());
     }
@@ -80,7 +83,7 @@ class RoomServiceImplTest {
         Room room = createRoom();
 
         Exception exception = assertThrows(NotFoundException.class, () -> {
-//            roomService.editRoom(room);
+            roomService.editRoom(ConvertRoomUtil.convertToDTO(room));
         });
 
         assertNotNull(exception.getMessage());
@@ -96,9 +99,9 @@ class RoomServiceImplTest {
 
         when(roomRepository.save(room)).thenReturn(room);
 
-//        Room actual = roomService.editRoom(room);
+        RoomDTO actual = roomService.editRoom(ConvertRoomUtil.convertToDTO(room));
 
-//        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
 
         verify(roomRepository, times(1)).save(room);
     }
@@ -205,9 +208,9 @@ class RoomServiceImplTest {
 
         when(roomRepository.save(room)).thenReturn(room);
 
-//        Room actual = roomService.bookRoom(room.getRoomId());
+        RoomDTO actual = roomService.bookRoom(room.getRoomId());
 
-//        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
 
         verify(roomRepository).save(room);
     }
@@ -217,9 +220,9 @@ class RoomServiceImplTest {
         Room room = createRoom();
         when(roomRepository.save(room)).thenReturn(room);
 
-//        Room actual = roomService.addRoom(room);
+        RoomDTO actual = roomService.addRoom(ConvertRoomUtil.convertToDTO(room));
 
-//        assertEquals(room, actual);
+        assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
 
         verify(roomRepository).save(room);
     }
@@ -232,9 +235,9 @@ class RoomServiceImplTest {
 
         when(roomRepository.findAllByBookingStatusFalseAndHospitalHospitalId(hospitalId)).thenReturn(rooms);
 
-//        List<Room> actual = roomService.showAllRoomFilterStatus("false", hospitalId);
+        List<RoomDTO> actual = roomService.showAllRoomFilterStatus("false", hospitalId);
 
-//        assertEquals(rooms, actual);
+        assertEquals(rooms.stream().map(ConvertRoomUtil::convertToDTO).collect(Collectors.toList()), actual);
 
         verify(roomRepository, times(1))
                 .findAllByBookingStatusFalseAndHospitalHospitalId(hospitalId);
@@ -248,9 +251,9 @@ class RoomServiceImplTest {
 
         when(roomRepository.findAllByBookingStatusTrueAndHospitalHospitalId(hospitalId)).thenReturn(rooms);
 
-//        List<Room> actual = roomService.showAllRoomFilterStatus("true", hospitalId);
+        List<RoomDTO> actual = roomService.showAllRoomFilterStatus("true", hospitalId);
 
-//        assertEquals(rooms, actual);
+        assertEquals(rooms.stream().map(ConvertRoomUtil::convertToDTO).collect(Collectors.toList()), actual);
 
         verify(roomRepository, times(1))
                 .findAllByBookingStatusTrueAndHospitalHospitalId(hospitalId);
@@ -264,9 +267,9 @@ class RoomServiceImplTest {
 
         when(roomRepository.findAllByHospitalHospitalId(hospitalId)).thenReturn(rooms);
 
-//        List<Room> actual = roomService.showAllRoomFilterStatus("all", hospitalId);
+        List<RoomDTO> actual = roomService.showAllRoomFilterStatus("all", hospitalId);
 
-//        assertEquals(rooms, actual);
+        assertEquals(rooms.stream().map(ConvertRoomUtil::convertToDTO).collect(Collectors.toList()), actual);
 
         verify(roomRepository, times(1))
                 .findAllByHospitalHospitalId(hospitalId);

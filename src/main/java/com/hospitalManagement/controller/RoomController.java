@@ -3,14 +3,11 @@ package com.hospitalManagement.controller;
 import com.hospitalManagement.dto.RoomDTO;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.service.RoomService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -66,7 +63,7 @@ public class RoomController {
             tags = {"Room"})
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO addRoom(@Parameter(description = "Object room to be written to the DB",
-            required = true, schema = @Schema(implementation = Room.class))
+            required = true, schema = @Schema(implementation = RoomDTO.class))
                            @Valid @RequestBody RoomDTO roomDTO) {
         return roomService.addRoom(roomDTO);
     }

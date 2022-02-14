@@ -1,5 +1,6 @@
 package com.hospitalManagement.dto;
 
+import com.hospitalManagement.entity.enums.Type;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -23,11 +24,15 @@ public class RoomDTO {
     @NotNull(message = "Room number is mandatory")
     private int numberRoom;
 
-    @Schema(description = "floor of room. Can`t be empty",
+    @Schema(description = "Floor of room. Can`t be empty",
             example = "1", required = true)
     @NotNull(message = "Floor number is mandatory")
     private int numberFloor;
 
+    @Schema(description = "Type room. Can`t be empty",
+            example = "OPERATION", required = true)
+    @NotNull(message = "Type room is mandatory")
+    private Type type;
 
     @Schema(description = "Room description. Can`t be empty",
             example = "This is the reception room", required = true)

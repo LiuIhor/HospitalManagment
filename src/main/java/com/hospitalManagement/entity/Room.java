@@ -1,7 +1,9 @@
 package com.hospitalManagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.hospitalManagement.entity.enums.Type;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,6 +22,7 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "hospital_id")
+    @JsonIgnore
     private Hospital hospital;
 
     @Column(name = "number_room")
@@ -27,6 +30,10 @@ public class Room {
 
     @Column(name = "floor")
     private int numberFloor;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     @Column(name = "description")
     private String description;
