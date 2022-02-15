@@ -1,14 +1,14 @@
 package com.hospitalManagement.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.*;
 
 import javax.persistence.*;
-
 import java.util.Set;
 
+/**
+ * The Hospital class represents the hospital entity.
+ */
 @Entity
 @Table(name = "Hospitals")
 @Data

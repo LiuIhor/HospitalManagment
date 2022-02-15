@@ -2,7 +2,6 @@ package com.hospitalManagement.controller;
 
 import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.entity.Hospital;
-import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.HospitalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -89,17 +88,17 @@ public class HospitalController {
     @Operation(summary = "Returns data for map of hospital as graph",
             tags = {"Hospital"})
     public Hospital showMapAsGraph(@Parameter(description = "The parameter is needed to get data hospital by id")
-                                               @PathVariable Long hospitalId) {
+                                   @PathVariable Long hospitalId) {
         return hospitalService.getHospitalEntityById(hospitalId);
     }
 
-    @GetMapping(value = "/{hospitalId}/map-svg",
+    @GetMapping(value = "/{hospitalId}/map/svg",
             produces = "image/svg+xml")
     @Operation(summary = "Generate actual map as svg picture",
             tags = {"Hospital"})
     public ResponseEntity<byte[]> showMap(@Parameter(description = "The parameter is needed to generate actual map" +
             " of hospital by id")
-                                               @PathVariable Long hospitalId){
+                                          @PathVariable Long hospitalId) {
         byte[] b = hospitalService.generateSVG(hospitalId);
 
         final HttpHeaders headers = new HttpHeaders();

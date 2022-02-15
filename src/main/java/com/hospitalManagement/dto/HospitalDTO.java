@@ -8,6 +8,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * The HospitalDTO class represents the hospital DTO.
+ */
 @Data
 public class HospitalDTO {
 

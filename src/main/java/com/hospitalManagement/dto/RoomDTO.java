@@ -7,6 +7,9 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * The RoomDTO class represents the room DTO.
+ */
 @Data
 public class RoomDTO {
 
@@ -30,7 +33,7 @@ public class RoomDTO {
     private int numberFloor;
 
     @Schema(description = "Type room. Can`t be empty",
-            example = "OPERATION", required = true)
+            example = "OPERATING/RECEPTION/WARD", required = true)
     @NotNull(message = "Type room is mandatory")
     private Type type;
 

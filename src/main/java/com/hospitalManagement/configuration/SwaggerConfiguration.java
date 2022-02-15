@@ -2,7 +2,6 @@ package com.hospitalManagement.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -29,14 +28,14 @@ public class SwaggerConfiguration {
 
     private ApiInfo swaggerMetaData() {
         return new ApiInfo(
-                    "Address book API",
-                    "Sample API for Hospital management",
-                    "1.0",
-                    "Free to use",
-                    new springfox.documentation.service.Contact("Ihor Liu", "", "iliu@griddynamics"),
-                    "API license",
-                    "",
-                    Collections.emptyList()
-            );
+                "Address book API",
+                "Sample API for Hospital management",
+                "1.0",
+                "Free to use",
+                new springfox.documentation.service.Contact("Ihor Liu", "", "iliu@griddynamics"),
+                "API license",
+                "",
+                Collections.emptyList()
+        );
     }
 }

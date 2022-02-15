@@ -90,4 +90,13 @@ public class RoomController {
                             @PathVariable Long roomId) {
         return roomService.bookRoom(roomId);
     }
+
+    @PostMapping(value = "/rooms/{roomId}/unbook",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Unbooks room by id", tags = {"Room"})
+    @ResponseStatus(HttpStatus.OK)
+    public RoomDTO unBookRoom(@Parameter(description = "The parameter is needed to unbook room in hospital by id")
+                              @PathVariable Long roomId) {
+        return roomService.bookRoom(roomId);
+    }
 }

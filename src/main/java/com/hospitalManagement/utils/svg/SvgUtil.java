@@ -22,6 +22,9 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Class to generate SVG map
+ */
 @UtilityClass
 public class SvgUtil {
     private static final int WIDTH_RECTANGLE = 70;
@@ -32,6 +35,14 @@ public class SvgUtil {
     private static final int SPACE = 10;
     private static final int SIZE_DIMENSION = 1500;
 
+    /**
+     * This method generates a svg map from the hospital rooms
+     *
+     * @param rooms rooms from which the map is generated
+     * @return Array bytes
+     * @throws TransformerException An exceptional condition that occurred during the transformation process
+     * @throws IOException          Signals that an I/O exception of some sort has occurred
+     */
     public byte[] svg(List<Room> rooms) throws TransformerException, IOException {
         DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
         String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
@@ -45,6 +56,15 @@ public class SvgUtil {
         return mapToBytes(mapHospital, doc);
     }
 
+    /**
+     * The method transforms the map into an Array bytes
+     *
+     * @param mapHospital SVGGraphics2D canvas
+     * @param doc         SVGDocument
+     * @return Array bytes
+     * @throws TransformerException An exceptional condition that occurred during the transformation process
+     * @throws IOException          Signals that an I/O exception of some sort has occurred
+     */
     public byte[] mapToBytes(SVGGraphics2D mapHospital, SVGDocument doc) throws IOException, TransformerException {
         Writer out = new OutputStreamWriter(System.out, UTF_8);
         mapHospital.stream(out, true);
@@ -59,6 +79,13 @@ public class SvgUtil {
         return b;
     }
 
+    /**
+     * The method that performs the rendering
+     *
+     * @param mapRooms     Converted list of rooms to map
+     * @param map          SVGGraphics2D map where the image will be applied
+     * @param hospitalName Hospital name
+     */
     public void draw(Map<Integer, List<Room>> mapRooms, SVGGraphics2D map, String hospitalName) {
         for (Map.Entry<Integer, List<Room>> entry : mapRooms.entrySet()) {
             int newBlock = 0;
@@ -67,6 +94,7 @@ public class SvgUtil {
             map.setPaint(Color.BLACK);
             map.drawString(String.format("%s floor: ", floor), SPACE, NEW_LINE * (floor - 1) + PADDING / 2 + 10);
             map.drawString("Room number: ", SPACE, NEW_LINE * (floor - 1) + PADDING / 2 + 42);
+            map.drawString("Room type: ", SPACE, NEW_LINE * (floor - 1) + PADDING / 2 + 57);
             printHospitalRooms(map, newBlock, floor, rooms);
         }
         infoCol(map, Color.red, 100, SIZE_DIMENSION / 2 - 170, " - The room is occupied.",
@@ -81,6 +109,14 @@ public class SvgUtil {
                 SIZE_DIMENSION / 2 - 100);
     }
 
+    /**
+     * Method to print rooms
+     *
+     * @param map      SVGGraphics2D map where the image will be applied
+     * @param newBlock Indent for new block
+     * @param floor    Number floor
+     * @param rooms    List of rooms that will be created
+     */
     private void printHospitalRooms(SVGGraphics2D map, int newBlock, int floor, List<Room> rooms) {
         for (Room room : rooms) {
             if (room.isBookingStatus()) {
@@ -93,11 +129,23 @@ public class SvgUtil {
                     WIDTH_RECTANGLE, HEIGHT_RECTANGLE);
             map.drawString(String.valueOf(room.getNumberRoom()), SPACE + newBlock,
                     NEW_LINE * (floor - 1) + PADDING + 10);
+            map.drawString(String.valueOf(room.getType()), SPACE + newBlock,
+                    NEW_LINE * (floor - 1) + PADDING + 25);
             map.draw(rectangle);
             map.fill(rectangle);
         }
     }
 
+    /**
+     * Information rendering method
+     *
+     * @param map   SVGGraphics2D map where the image will be applied
+     * @param color Block color
+     * @param x     Coordinate
+     * @param y     Coordinate
+     * @param info  Information text
+     * @param strY  Coordinate
+     */
     public void infoCol(SVGGraphics2D map, Color color, int x, int y, String info, int strY) {
         map.setPaint(color);
         map.drawRect(x, y, 20, 20);

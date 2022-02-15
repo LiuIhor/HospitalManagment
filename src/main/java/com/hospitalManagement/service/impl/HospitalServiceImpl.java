@@ -5,14 +5,12 @@ import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
-import com.hospitalManagement.utils.svg.SvgUtil;
 import com.hospitalManagement.repository.HospitalRepository;
 import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.HospitalService;
-
 import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
+import com.hospitalManagement.utils.svg.SvgUtil;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -36,6 +34,7 @@ public class HospitalServiceImpl implements HospitalService {
      * addHospital - method to add hospital in the DB
      *
      * @param hospital - this is the Hospital object that will be recorded in the database
+     * @return Saved hospital
      */
     @Override
     public HospitalDTO addHospital(HospitalDTO hospital) {
@@ -57,26 +56,34 @@ public class HospitalServiceImpl implements HospitalService {
      * getHospitalById - method to get hospital by id from DB
      *
      * @param id - this is the id by which the Hospital object will be received
+     * @return Hospital
      * @throws NotFoundException - occurs when an object is not found in the database
      */
     @Override
     public HospitalDTO getHospitalById(Long id) {
         Hospital hospital = hospitalRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("I don`t found Hospital with id %d", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Hospital with id %d does not exists", id)));
         return ConvertHospitalUtil.convertToDTO(hospital);
     }
 
+    /**
+     * getHospitalEntityById - method to get hospital by id from DB how Entity
+     *
+     * @param id - this is the id by which the Hospital object will be received
+     * @return Hospital
+     * @throws NotFoundException - occurs when an object is not found in the database
+     */
     @Override
     public Hospital getHospitalEntityById(Long id) {
-        Hospital hospital = hospitalRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("I don`t found Hospital with id %d", id)));
-        return hospital;
+        return hospitalRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Hospital with id %d does not exists\n", id)));
     }
 
     /**
      * editHospital - method to edit hospital
      *
      * @param hospital - this is the Hospital object that will be received in the database
+     * @return Changed hospital
      * @throws IdNullException   - occurs when id equals null
      * @throws NotFoundException - occurs when an object is not found in the database
      */
@@ -84,7 +91,7 @@ public class HospitalServiceImpl implements HospitalService {
     public HospitalDTO editHospital(HospitalDTO hospital) {
         if (!hospitalRepository.existsById(hospital.getHospitalId())) {
             throw new NotFoundException(String.format("You can`t edit Hospital. " +
-                    "Because hospital with id %d not founded!", hospital.getHospitalId()));
+                    "Because hospital with id %d does not exists", hospital.getHospitalId()));
         }
         return ConvertHospitalUtil.convertToDTO(
                 hospitalRepository.save(ConvertHospitalUtil.convertToEntity(hospital)));
@@ -93,7 +100,7 @@ public class HospitalServiceImpl implements HospitalService {
     /**
      * getAllHospitals - method to get all hospitals
      *
-     * @return
+     * @return List of hospitals
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
@@ -105,10 +112,15 @@ public class HospitalServiceImpl implements HospitalService {
         return hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList());
     }
 
+    /**
+     * generateSVG - method to generate map
+     *
+     * @param hospitalId - this is the id by which the Hospital card will be received
+     * @return Array bytes
+     */
     @Override
     public byte[] generateSVG(Long hospitalId) {
         List<Room> rooms = roomRepository.findAllByHospitalHospitalId(hospitalId);
-        System.out.println(rooms);
         byte[] map = null;
         try {
             System.out.println("Enter in try");

@@ -6,10 +6,8 @@ import com.hospitalManagement.exception_handling.IdNullException;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.service.RoomService;
-
 import com.hospitalManagement.utils.modelMapper.ConvertRoomUtil;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,6 +29,7 @@ public class RoomServiceImpl implements RoomService {
      * addHospital - method to add room in the DB
      *
      * @param room - this is the Room object that will be recorded in the database
+     * @return Added room
      */
     @Override
     public RoomDTO addRoom(RoomDTO room) {
@@ -51,6 +50,7 @@ public class RoomServiceImpl implements RoomService {
      * getRoomById - method to get room by id from theDB
      *
      * @param roomId - this is the id by which the Room object will be received
+     * @return Room
      * @throws NotFoundException - occurs when an object is not found in the database
      */
     @Override
@@ -64,6 +64,7 @@ public class RoomServiceImpl implements RoomService {
      * editRoom - method to edit room
      *
      * @param room - this is the Room object that will be received in the database
+     * @return changed room
      * @throws IdNullException   - occurs when id equals null
      * @throws NotFoundException - occurs when an object is not found in the database
      */
@@ -79,6 +80,7 @@ public class RoomServiceImpl implements RoomService {
     /**
      * getAllRooms - method to get all rooms
      *
+     * @return List of rooms
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
@@ -94,6 +96,7 @@ public class RoomServiceImpl implements RoomService {
      * getAllRoomsByHospitalId - method to get all rooms by hospitalId
      *
      * @param hospitalId - id of the hospitals for which the search for rooms will be
+     * @return List of rooms
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
@@ -109,6 +112,7 @@ public class RoomServiceImpl implements RoomService {
      * getAllRoomsByHospitalId - method to get all free rooms by hospitalId
      *
      * @param hospitalId - id of the hospitals for which the search for rooms will be
+     * @return List of free rooms
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
@@ -124,6 +128,7 @@ public class RoomServiceImpl implements RoomService {
      * getAllRoomsByHospitalId - method to get all not free rooms by hospitalId
      *
      * @param hospitalId - id of the hospitals for which the search for rooms will be
+     * @return List of busy rooms
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
@@ -140,6 +145,7 @@ public class RoomServiceImpl implements RoomService {
      *
      * @param book       - bookingStatus of room
      * @param hospitalId - id of the hospitals for which the search for rooms will be
+     * @return List of rooms
      * @throws NotFoundException - occurs when objects are not found in the database
      */
     @Override
@@ -154,7 +160,7 @@ public class RoomServiceImpl implements RoomService {
         if (book.equals("all")) {
             rooms = getAllRoomsByHospitalId(hospitalId);
         }
-        return  rooms.stream().map(ConvertRoomUtil::convertToDTO).collect(Collectors.toList());
+        return rooms.stream().map(ConvertRoomUtil::convertToDTO).collect(Collectors.toList());
     }
 
     /**
@@ -171,6 +177,7 @@ public class RoomServiceImpl implements RoomService {
      * bookRoom - method to booked by id room
      *
      * @param roomId - this is the id by which the Room object will book
+     * @return Booked room
      * @throws NotFoundException - occurs when object is not found in the database
      */
     @Override
@@ -185,5 +192,26 @@ public class RoomServiceImpl implements RoomService {
                     "Because room with id %d not founded!", roomId));
         }
         return ConvertRoomUtil.convertToDTO(bookRoom);
+    }
+
+    /**
+     * bookRoom - method to unbooked by id room
+     *
+     * @param roomId - this is the id by which the Room object will book
+     * @return Booked room
+     * @throws NotFoundException - occurs when object is not found in the database
+     */
+    @Override
+    public RoomDTO unBookRoom(Long roomId) {
+        Room unBookRoom;
+        if (roomRepository.existsById(roomId)) {
+            unBookRoom = roomRepository.getById(roomId);
+            unBookRoom.setBookingStatus(false);
+            roomRepository.save(unBookRoom);
+        } else {
+            throw new NotFoundException(String.format("You can`t book this room. " +
+                    "Because room with id %d not founded!", roomId));
+        }
+        return ConvertRoomUtil.convertToDTO(unBookRoom);
     }
 }
