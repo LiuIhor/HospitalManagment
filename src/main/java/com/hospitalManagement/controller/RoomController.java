@@ -97,6 +97,6 @@ public class RoomController {
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO unBookRoom(@Parameter(description = "The parameter is needed to unbook room in hospital by id")
                               @PathVariable Long roomId) {
-        return roomService.bookRoom(roomId);
+        return roomService.unBookRoom(roomId);
     }
 }

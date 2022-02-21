@@ -12,10 +12,9 @@ import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
 import com.hospitalManagement.utils.svg.SvgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
-import javax.xml.transform.TransformerException;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +75,7 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public Hospital getHospitalEntityById(Long id) {
         return hospitalRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Hospital with id %d does not exists\n", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Hospital with id %d does not exists!", id)));
     }
 
     /**
@@ -90,8 +89,7 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public HospitalDTO editHospital(HospitalDTO hospital) {
         if (!hospitalRepository.existsById(hospital.getHospitalId())) {
-            throw new NotFoundException(String.format("You can`t edit Hospital. " +
-                    "Because hospital with id %d does not exists", hospital.getHospitalId()));
+            throw new NotFoundException(String.format("Hospital with id %d does not exists!", hospital.getHospitalId()));
         }
         return ConvertHospitalUtil.convertToDTO(
                 hospitalRepository.save(ConvertHospitalUtil.convertToEntity(hospital)));
@@ -106,8 +104,8 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public List<HospitalDTO> getAllHospitals() {
         List<Hospital> hospitals = hospitalRepository.findAll();
-        if (hospitals.isEmpty()) {
-            throw new NotFoundException("Table hospitals in BD is empty");
+        if (CollectionUtils.isEmpty(hospitals)) {
+            throw new NotFoundException("Hospitals do not exist");
         }
         return hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList());
     }
@@ -122,13 +120,7 @@ public class HospitalServiceImpl implements HospitalService {
     public byte[] generateSVG(Long hospitalId) {
         List<Room> rooms = roomRepository.findAllByHospitalHospitalId(hospitalId);
         byte[] map = null;
-        try {
-            System.out.println("Enter in try");
-            map = SvgUtil.svg(rooms);
-
-        } catch (TransformerException | IOException e) {
-            e.printStackTrace();
-        }
+        map = SvgUtil.svg(rooms);
         return map;
     }
 }

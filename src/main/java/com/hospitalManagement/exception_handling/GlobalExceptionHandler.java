@@ -48,7 +48,6 @@ public class GlobalExceptionHandler {
                 ZonedDateTime.now(ZoneId.of(ZONE_ID)));
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(

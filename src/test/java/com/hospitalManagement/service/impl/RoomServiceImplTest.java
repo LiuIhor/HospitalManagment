@@ -5,7 +5,6 @@ import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.RoomRepository;
-
 import com.hospitalManagement.utils.modelMapper.ConvertRoomUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -171,7 +170,19 @@ class RoomServiceImplTest {
     }
 
     @Test
-    void whenShowFreeRoomsIfListNotEmptyShouldBeReturnHospitals() {
+    void whenShowNotFreeRoomsIfListEmptyShouldBeReturnException() {
+        List<Room> rooms = new ArrayList<>();
+        Long hospitalId = 1L;
+
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            roomService.showNotFreeRooms(hospitalId);
+        });
+
+        assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    void whenShowFreeRoomsIfListNotEmptyShouldBeReturnRooms() {
         List<Room> rooms = new ArrayList<>();
         rooms.add(createRoom());
         Long hospitalId = 1L;
@@ -195,8 +206,9 @@ class RoomServiceImplTest {
 
         assertNotNull(exception.getMessage());
 
-        verify(roomRepository, times(0)).deleteById(room.getRoomId());
+        verify(roomRepository, times(0)).save(room);
     }
+
 
     @Test
     void whenBookRoomIfFoundShouldBeReturnRoom() {
@@ -209,6 +221,39 @@ class RoomServiceImplTest {
         when(roomRepository.save(room)).thenReturn(room);
 
         RoomDTO actual = roomService.bookRoom(room.getRoomId());
+
+        assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
+
+        verify(roomRepository).save(room);
+    }
+
+    @Test
+    void whenUnBookRoomIfNotFoundShouldBeReturnException() {
+        Room room = createRoom();
+
+        when(roomRepository.existsById(room.getRoomId())).thenReturn(false);
+
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            roomService.unBookRoom(room.getRoomId());
+        });
+
+        assertNotNull(exception.getMessage());
+
+        verify(roomRepository, times(0)).save(room);
+    }
+
+
+    @Test
+    void whenUnBookRoomIfFoundShouldBeReturnRoom() {
+        Room room = createRoom();
+
+        when(roomRepository.existsById(room.getRoomId())).thenReturn(true);
+
+        when(roomRepository.getById(room.getRoomId())).thenReturn(room);
+
+        when(roomRepository.save(room)).thenReturn(room);
+
+        RoomDTO actual = roomService.unBookRoom(room.getRoomId());
 
         assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
 
@@ -260,7 +305,7 @@ class RoomServiceImplTest {
     }
 
     @Test
-    void whenShowAllRoofIfStatusAllShouldBeReturnRoomFree() {
+    void whenShowAllRoofIfStatusAllShouldBeReturnRoomBusy() {
         List<Room> rooms = new ArrayList<>();
         rooms.add(createRoom());
         Long hospitalId = 1L;

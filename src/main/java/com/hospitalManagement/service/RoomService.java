@@ -83,13 +83,6 @@ public interface RoomService {
     List<RoomDTO> showAllRoomFilterStatus(String book, Long hospitalId);
 
     /**
-     * deleteRoomFromHospitalById - method to delete by id room from the DB
-     *
-     * @param roomId - this is the id by which the Room object will be deleted
-     */
-    void deleteRoomFromHospitalById(Long roomId);
-
-    /**
      * bookRoom - method to booked by id room
      *
      * @param roomId - this is the id by which the Room object will book

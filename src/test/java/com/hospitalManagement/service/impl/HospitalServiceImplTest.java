@@ -2,13 +2,16 @@ package com.hospitalManagement.service.impl;
 
 import com.hospitalManagement.dto.HospitalDTO;
 import com.hospitalManagement.entity.Hospital;
+import com.hospitalManagement.entity.Room;
+import com.hospitalManagement.entity.enums.Type;
 import com.hospitalManagement.exception_handling.NotFoundException;
 import com.hospitalManagement.repository.HospitalRepository;
-
+import com.hospitalManagement.repository.RoomRepository;
 import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -24,6 +27,9 @@ class HospitalServiceImplTest {
 
     @Mock
     private HospitalRepository hospitalRepository;
+
+    @Mock
+    private RoomRepository roomRepository;
 
     @InjectMocks
     private HospitalServiceImpl hospitalService;
@@ -78,6 +84,33 @@ class HospitalServiceImplTest {
     }
 
     @Test
+    void whenGetHospitalEntityIfFoundShouldBeReturnHospital() {
+        Long id = 1L;
+        Hospital hospital = creteHospital();
+
+        when(hospitalRepository.findById(id)).thenReturn(Optional.ofNullable(hospital));
+
+        Hospital actual = hospitalService.getHospitalEntityById(id);
+
+        assertEquals(hospital, actual);
+
+        verify(hospitalRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void whenGetHospitalEntityIfNotFoundShouldBeReturnException() {
+        Long id = 1L;
+
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            hospitalService.getHospitalEntityById(id);
+        });
+
+        assertNotNull(exception.getMessage());
+
+        verify(hospitalRepository, times(1)).findById(id);
+    }
+
+    @Test
     void WhenEditHospitalIfNotFoundShouldBeReturnException() {
         Hospital hospital = creteHospital();
 
@@ -123,9 +156,19 @@ class HospitalServiceImplTest {
         List<Hospital> hospitals = new ArrayList<>();
         hospitals.add(new Hospital());
         when(hospitalRepository.findAll()).thenReturn(hospitals);
-        assertEquals( hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList()),
+        assertEquals(hospitals.stream().map(ConvertHospitalUtil::convertToDTO).collect(Collectors.toList()),
                 hospitalService.getAllHospitals());
         verify(hospitalRepository).findAll();
+    }
+
+    @Test
+    void whenGenerateSVGShouldBeReturnNotNull() {
+        List<Room> rooms = new ArrayList<>();
+        rooms.add(new Room(1L, new Hospital(), 101, 1, Type.OPERATING, "description", true));
+        when(roomRepository.findAllByHospitalHospitalId(1L)).thenReturn(rooms);
+
+        assertNotNull(hospitalService.generateSVG(1L));
+        verify(roomRepository, times(1)).findAllByHospitalHospitalId(1L);
     }
 
     Hospital creteHospital() {

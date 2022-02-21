@@ -9,6 +9,7 @@ import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.utils.modelMapper.ConvertRoomUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() ->
-                new NotFoundException(String.format("I don`t found room with id %d", roomId)));
+                new NotFoundException(String.format("Room with id %d does not exists!", roomId)));
         return ConvertRoomUtil.convertToDTO(room);
     }
 
@@ -71,8 +72,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO editRoom(RoomDTO room) {
         if (!roomRepository.existsById(room.getRoomId())) {
-            throw new NotFoundException(String.format("You can`t edit Room. " +
-                    "Because room with id %d not founded!", room.getRoomId()));
+            throw new NotFoundException(String.format("Room with id %d does not exists!", room.getRoomId()));
         }
         return ConvertRoomUtil.convertToDTO(roomRepository.save(ConvertRoomUtil.convertToEntity(room)));
     }
@@ -86,8 +86,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
-        if (rooms.isEmpty()) {
-            throw new NotFoundException("table rooms in DB is empty");
+        if (CollectionUtils.isEmpty(rooms)) {
+            throw new NotFoundException("Rooms do not exists!");
         }
         return rooms;
     }
@@ -102,8 +102,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> getAllRoomsByHospitalId(Long hospitalId) {
         List<Room> rooms = roomRepository.findAllByHospitalHospitalId(hospitalId);
-        if (rooms.isEmpty()) {
-            throw new NotFoundException(String.format("Rooms of hospital with id %d not founded!", hospitalId));
+        if (CollectionUtils.isEmpty(rooms)) {
+            throw new NotFoundException(String.format("Rooms in hospital with id %d do not exists!", hospitalId));
         }
         return rooms;
     }
@@ -118,8 +118,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> showFreeRooms(Long hospitalId) {
         List<Room> rooms = roomRepository.findAllByBookingStatusFalseAndHospitalHospitalId(hospitalId);
-        if (rooms.isEmpty()) {
-            throw new NotFoundException(String.format("Free rooms in hospital with id %d not founded!", hospitalId));
+        if (CollectionUtils.isEmpty(rooms)) {
+            throw new NotFoundException(String.format("Room in hospital with id %d does not exists!", hospitalId));
         }
         return rooms;
     }
@@ -134,8 +134,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> showNotFreeRooms(Long hospitalId) {
         List<Room> rooms = roomRepository.findAllByBookingStatusTrueAndHospitalHospitalId(hospitalId);
-        if (rooms.isEmpty()) {
-            throw new NotFoundException(String.format("Free rooms in hospital with id %d not founded!", hospitalId));
+        if (CollectionUtils.isEmpty(rooms)) {
+            throw new NotFoundException(String.format("Room in hospital with id %d does not exists!", hospitalId));
         }
         return rooms;
     }
@@ -164,16 +164,6 @@ public class RoomServiceImpl implements RoomService {
     }
 
     /**
-     * deleteRoomFromHospitalById - method to delete by id room from the DB
-     *
-     * @param roomId - this is the id by which the Room object will be deleted
-     */
-    @Override
-    public void deleteRoomFromHospitalById(Long roomId) {
-        roomRepository.deleteById(roomId);
-    }
-
-    /**
      * bookRoom - method to booked by id room
      *
      * @param roomId - this is the id by which the Room object will book
@@ -188,8 +178,7 @@ public class RoomServiceImpl implements RoomService {
             bookRoom.setBookingStatus(true);
             roomRepository.save(bookRoom);
         } else {
-            throw new NotFoundException(String.format("You can`t book this room. " +
-                    "Because room with id %d not founded!", roomId));
+            throw new NotFoundException(String.format("Room with id %d does not exists", roomId));
         }
         return ConvertRoomUtil.convertToDTO(bookRoom);
     }
@@ -209,8 +198,7 @@ public class RoomServiceImpl implements RoomService {
             unBookRoom.setBookingStatus(false);
             roomRepository.save(unBookRoom);
         } else {
-            throw new NotFoundException(String.format("You can`t book this room. " +
-                    "Because room with id %d not founded!", roomId));
+            throw new NotFoundException(String.format("Room with id %d does not exists", roomId));
         }
         return ConvertRoomUtil.convertToDTO(unBookRoom);
     }

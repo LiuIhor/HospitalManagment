@@ -1,11 +1,10 @@
 package com.hospitalManagement.controller;
 
 import com.hospitalManagement.dto.RoomDTO;
-import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.entity.Hospital;
 import com.hospitalManagement.entity.Room;
+import com.hospitalManagement.service.RoomService;
 import com.hospitalManagement.utils.modelMapper.ConvertRoomUtil;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +41,19 @@ class RoomControllerTest {
         verify(roomService, times(1)).bookRoom(room_id);
     }
 
+    @Test
+    void unBookRoom() {
+        Long room_id = 1L;
+        Room room = createRoom();
+
+        when(roomService.unBookRoom(room_id)).thenReturn(ConvertRoomUtil.convertToDTO(room));
+
+        RoomDTO actual = roomController.unBookRoom(room_id);
+
+        assertEquals(ConvertRoomUtil.convertToDTO(room), actual);
+
+        verify(roomService, times(1)).unBookRoom(room_id);
+    }
 
     @Test
     void showAllRoomsByHospitalId() {

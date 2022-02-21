@@ -1,8 +1,10 @@
 package com.hospitalManagement.controller;
 
 import com.hospitalManagement.dto.HospitalDTO;
-import com.hospitalManagement.service.HospitalService;
 import com.hospitalManagement.entity.Hospital;
+import com.hospitalManagement.entity.Room;
+import com.hospitalManagement.entity.enums.Type;
+import com.hospitalManagement.service.HospitalService;
 import com.hospitalManagement.utils.modelMapper.ConvertHospitalUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,9 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,6 +104,31 @@ class HospitalControllerTest {
                 .editHospital(ConvertHospitalUtil.convertToDTO(hospital));
     }
 
+    @Test
+    void showMapAsGraph() {
+        Hospital hospital = creteHospital();
+        hospital.setRooms(createRooms());
+
+        when(hospitalService.getHospitalEntityById(1L)).thenReturn(hospital);
+
+        Hospital actual = hospitalController.showMapAsGraph(1L);
+
+        assertEquals(hospital, actual);
+
+        verify(hospitalService, times(1))
+                .getHospitalEntityById(1L);
+    }
+
+    @Test
+    void showMap() {
+        when(hospitalService.generateSVG(1L)).thenReturn(new byte[0]);
+
+        assertNotNull(hospitalController.showMap(1L));
+
+        verify(hospitalService, times(1))
+                .generateSVG(1L);
+    }
+
     Hospital creteHospital() {
         Hospital hospital = new Hospital();
         hospital.setHospitalId(1L);
@@ -109,5 +138,16 @@ class HospitalControllerTest {
         hospital.setEmail("email@gmail.com");
         hospital.setHospitalId(1L);
         return hospital;
+    }
+
+    Set<Room> createRooms() {
+        Room room = new Room();
+        room.setBookingStatus(true);
+        room.setRoomId(1L);
+        room.setNumberFloor(1);
+        room.setNumberRoom(101);
+        room.setDescription("description");
+        room.setType(Type.OPERATING);
+        return Set.of(room);
     }
 }

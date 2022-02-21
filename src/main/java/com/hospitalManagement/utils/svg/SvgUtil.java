@@ -3,6 +3,7 @@ package com.hospitalManagement.utils.svg;
 import com.hospitalManagement.entity.Room;
 import com.hospitalManagement.utils.convertRooms.ConvertListToMapUtil;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
@@ -26,6 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Class to generate SVG map
  */
 @UtilityClass
+@Slf4j
 public class SvgUtil {
     private static final int WIDTH_RECTANGLE = 70;
     private static final int HEIGHT_RECTANGLE = 50;
@@ -43,7 +45,7 @@ public class SvgUtil {
      * @throws TransformerException An exceptional condition that occurred during the transformation process
      * @throws IOException          Signals that an I/O exception of some sort has occurred
      */
-    public byte[] svg(List<Room> rooms) throws TransformerException, IOException {
+    public byte[] svg(List<Room> rooms) {
         DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
         String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
         SVGDocument doc = (SVGDocument) impl.createDocument(svgNS, "svg", null);
@@ -53,7 +55,13 @@ public class SvgUtil {
         draw(floorToRooms, mapHospital, rooms.get(0).getHospital().getName());
         Element root = doc.getDocumentElement();
         mapHospital.getRoot(root);
-        return mapToBytes(mapHospital, doc);
+        byte[] map = new byte[0];
+        try {
+            map = mapToBytes(mapHospital, doc);
+        } catch (TransformerException | IOException e) {
+            log.error("Ops!", e);
+        }
+        return map;
     }
 
     /**
@@ -121,9 +129,8 @@ public class SvgUtil {
         for (Room room : rooms) {
             if (room.isBookingStatus()) {
                 map.setPaint(Color.red);
-            } else {
-                map.setPaint(Color.green);
             }
+            map.setPaint(Color.green);
             newBlock += 90;
             Shape rectangle = new Rectangle2D.Double(SPACE + newBlock, NEW_LINE * (floor - 1) + 10,
                     WIDTH_RECTANGLE, HEIGHT_RECTANGLE);

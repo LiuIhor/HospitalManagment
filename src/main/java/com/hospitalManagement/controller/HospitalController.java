@@ -105,6 +105,4 @@ public class HospitalController {
         headers.setContentType(MediaType.TEXT_XML);
         return new ResponseEntity<>(b, headers, HttpStatus.OK);
     }
-
-
 }
